@@ -1,11 +1,6 @@
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic'
 import './globals.css'
-
-const ConvexClientProvider = dynamic(
-  () => import('@/components/ConvexClientProvider'),
-  { ssr: false }
-)
+import ConvexClientProvider from '@/components/ConvexClientProvider'
 
 export const metadata: Metadata = {
   title: 'Tractor Games',
