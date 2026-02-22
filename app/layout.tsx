@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 import ConvexClientProvider from '@/components/ConvexClientProvider'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Tractor Games',
   description: 'Play the popular trick-taking card game Tractor',
