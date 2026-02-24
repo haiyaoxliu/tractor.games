@@ -16,7 +16,7 @@ export default defineSchema({
       v.literal("playing"),
       v.literal("finished")
     ),
-    gameType: v.optional(v.union(v.literal("tractor"), v.literal("hearts"))),
+    gameType: v.optional(v.union(v.literal("tractor"), v.literal("hearts"), v.literal("werewolf"))),
     gameId: v.optional(v.id("games")),
     teamRanks: v.optional(v.array(v.number())), // [team0&2 rank index, team1&3 rank index] into RANKS
     defendingTeamIndex: v.optional(v.number()), // 0 or 1 — which team is defending
@@ -25,6 +25,7 @@ export default defineSchema({
       roundNumber: v.number(),
       scores: v.array(v.number()),
     }))),
+    werewolfGameId: v.optional(v.id("werewolfGames")),
   }).index("by_roomCode", ["roomCode"]),
 
   games: defineTable({
@@ -102,5 +103,40 @@ export default defineSchema({
     ),
     capturedCards: v.array(v.array(v.string())), // capturedCards[seatIndex] = all won cards
     roundNumber: v.number(),
+  }),
+
+  werewolfGames: defineTable({
+    roomId: v.id("rooms"),
+    phase: v.union(
+      v.literal("night"),
+      v.literal("day"),
+      v.literal("voting"),
+      v.literal("results")
+    ),
+    selectedRoles: v.array(v.string()),
+    originalRoles: v.array(v.string()),
+    currentRoles: v.array(v.string()),
+    centerCards: v.array(v.string()),
+    currentCenterCards: v.array(v.string()),
+    nightActionQueue: v.array(v.object({
+      seat: v.number(),
+      role: v.string(),
+      order: v.number(),
+    })),
+    nightActionIndex: v.number(),
+    nightActions: v.array(v.object({
+      seat: v.number(),
+      role: v.string(),
+      action: v.any(),
+    })),
+    nightInfo: v.array(v.any()),
+    votes: v.array(v.object({
+      seat: v.number(),
+      targetSeat: v.number(),
+    })),
+    killedSeats: v.array(v.number()),
+    winners: v.array(v.string()),
+    dayTimeLimit: v.optional(v.number()),
+    dayStartTime: v.optional(v.number()),
   }),
 });

@@ -2,12 +2,14 @@
 
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
 import { getSessionId, getPlayerName } from "@/lib/cardUtils";
 import RoomLobby from "@/components/RoomLobby";
 import GameBoard from "@/components/GameBoard";
 import HeartsGameBoard from "@/components/HeartsGameBoard";
+import WerewolfGameBoard from "@/components/WerewolfGameBoard";
+import WerewolfRoleSelect from "@/components/WerewolfRoleSelect";
 
 export default function RoomPage() {
   const params = useParams();
@@ -24,9 +26,13 @@ export default function RoomPage() {
   const room = useQuery(api.rooms.getRoomByCode, { roomCode });
   const startGame = useMutation(api.game.startGame);
   const startHeartsGame = useMutation(api.heartsGame.startHeartsGame);
+  const startWerewolfGame = useMutation(api.werewolfGame.startWerewolfGame);
+  const leaveRoom = useMutation(api.rooms.leaveRoom);
+  const router = useRouter();
 
   const gameType = room?.gameType ?? "tractor";
   const isHearts = gameType === "hearts";
+  const isWerewolf = gameType === "werewolf";
 
   // Get tractor game state if applicable
   const tractorGameId = room?.gameId;
@@ -40,6 +46,13 @@ export default function RoomPage() {
   const heartsState = useQuery(
     api.heartsGameQueries.getHeartsGameState,
     isHearts && heartsGameId && sessionId ? { gameId: heartsGameId, sessionId } : "skip"
+  );
+
+  // Get werewolf game state if applicable
+  const werewolfGameId = room?.werewolfGameId;
+  const werewolfState = useQuery(
+    api.werewolfGameQueries.getWerewolfGameState,
+    isWerewolf && werewolfGameId && sessionId ? { gameId: werewolfGameId, sessionId } : "skip"
   );
 
   if (!sessionId) {
@@ -139,6 +152,10 @@ export default function RoomPage() {
 
   // Lobby view
   if (room.status === "waiting") {
+    const canStart = isWerewolf
+      ? room.players.length >= 5
+      : room.players.length === 4;
+
     return (
       <main
         style={{
@@ -152,12 +169,23 @@ export default function RoomPage() {
         <RoomLobby
           roomCode={room.roomCode}
           players={room.players}
-          canStart={room.players.length === 4}
+          canStart={canStart}
           sessionId={sessionId}
           gameType={gameType}
-          onStart={async () => {
+          onLeave={async () => {
             try {
-              if (isHearts) {
+              await leaveRoom({ roomCode, sessionId });
+              router.push("/");
+            } catch (e) {
+              alert(e instanceof Error ? e.message : "Failed to leave");
+            }
+          }}
+          onStart={async (selectedRoles?: string[]) => {
+            try {
+              if (isWerewolf) {
+                if (!selectedRoles) throw new Error("Select roles first");
+                await startWerewolfGame({ roomId: room._id, selectedRoles });
+              } else if (isHearts) {
                 await startHeartsGame({ roomId: room._id });
               } else {
                 await startGame({ roomId: room._id });
@@ -167,6 +195,15 @@ export default function RoomPage() {
             }
           }}
         />
+      </main>
+    );
+  }
+
+  // Werewolf game view
+  if (isWerewolf && werewolfState) {
+    return (
+      <main style={{ minHeight: "100vh", padding: "1rem", background: "#1a1a2e" }}>
+        <WerewolfGameBoard game={werewolfState} sessionId={sessionId} />
       </main>
     );
   }
