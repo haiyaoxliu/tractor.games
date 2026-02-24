@@ -13,6 +13,8 @@ interface PlayerHandProps {
   canPlay: boolean;
   isKittyPhase?: boolean;
   onDiscardKitty?: (cards: string[]) => void;
+  singleCardOnly?: boolean;
+  sortFn?: (cards: string[]) => string[];
 }
 
 export default function PlayerHand({
@@ -24,12 +26,18 @@ export default function PlayerHand({
   canPlay,
   isKittyPhase,
   onDiscardKitty,
+  singleCardOnly,
+  sortFn,
 }: PlayerHandProps) {
   const [selected, setSelected] = useState<number[]>([]);
 
-  const sorted = sortHand(cards, trumpSuit, trumpRank, noTrumpSuit);
+  const sorted = sortFn ? sortFn(cards) : sortHand(cards, trumpSuit, trumpRank, noTrumpSuit);
 
   const toggleSelect = (idx: number) => {
+    if (singleCardOnly) {
+      setSelected((prev) => prev.includes(idx) ? [] : [idx]);
+      return;
+    }
     setSelected((prev) =>
       prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
     );
@@ -49,8 +57,10 @@ export default function PlayerHand({
     setSelected([]);
   };
 
-  // Valid play counts: 1 (single), 2 (pair), 4+ even (tractor)
-  const isValidPlayCount = selected.length === 1 || selected.length === 2 || (selected.length >= 4 && selected.length % 2 === 0);
+  // Valid play counts: single-card mode just needs 1; tractor mode: 1, 2, or 4+ even
+  const isValidPlayCount = singleCardOnly
+    ? selected.length === 1
+    : selected.length === 1 || selected.length === 2 || (selected.length >= 4 && selected.length % 2 === 0);
   const canPlayCards = isValidPlayCount && selected.length > 0;
 
   return (
@@ -99,7 +109,7 @@ export default function PlayerHand({
               cursor: canPlayCards ? "pointer" : "not-allowed",
             }}
           >
-            Play {selected.length} Card{selected.length !== 1 ? "s" : ""}
+            {singleCardOnly ? "Play Card" : `Play ${selected.length} Card${selected.length !== 1 ? "s" : ""}`}
           </button>
         )}
       </div>

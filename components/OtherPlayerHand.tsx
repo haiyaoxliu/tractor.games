@@ -5,7 +5,8 @@ interface OtherPlayerHandProps {
   cardCount: number;
   isCurrentTurn: boolean;
   seat: number;
-  isTeammate: boolean;
+  isTeammate?: boolean;
+  showTeamLabel?: boolean;
 }
 
 export default function OtherPlayerHand({
@@ -14,7 +15,14 @@ export default function OtherPlayerHand({
   isCurrentTurn,
   seat,
   isTeammate,
+  showTeamLabel = true,
 }: OtherPlayerHandProps) {
+  const borderColor = isCurrentTurn
+    ? "#ffc107"
+    : showTeamLabel && isTeammate !== undefined
+      ? (isTeammate ? "#28a745" : "#dc3545")
+      : "#999";
+
   return (
     <div
       style={{
@@ -22,13 +30,13 @@ export default function OtherPlayerHand({
         padding: "0.5rem",
         background: isCurrentTurn ? "#fff3cd" : "#f8f9fa",
         borderRadius: 8,
-        border: `2px solid ${isCurrentTurn ? "#ffc107" : isTeammate ? "#28a745" : "#dc3545"}`,
+        border: `2px solid ${borderColor}`,
         minWidth: 120,
       }}
     >
       <div style={{ fontWeight: 700, fontSize: "0.9rem", marginBottom: 4 }}>
         {name}
-        {isTeammate ? " (ally)" : " (opp)"}
+        {showTeamLabel && isTeammate !== undefined && (isTeammate ? " (ally)" : " (opp)")}
       </div>
       <div style={{ fontSize: "0.85rem", color: "#666" }}>
         {cardCount} card{cardCount !== 1 ? "s" : ""}

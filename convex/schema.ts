@@ -16,9 +16,15 @@ export default defineSchema({
       v.literal("playing"),
       v.literal("finished")
     ),
+    gameType: v.optional(v.union(v.literal("tractor"), v.literal("hearts"))),
     gameId: v.optional(v.id("games")),
     teamRanks: v.optional(v.array(v.number())), // [team0&2 rank index, team1&3 rank index] into RANKS
     defendingTeamIndex: v.optional(v.number()), // 0 or 1 — which team is defending
+    heartsGameId: v.optional(v.id("heartsGames")),
+    heartsScores: v.optional(v.array(v.object({
+      roundNumber: v.number(),
+      scores: v.array(v.number()),
+    }))),
   }).index("by_roomCode", ["roomCode"]),
 
   games: defineTable({
@@ -69,5 +75,32 @@ export default defineSchema({
     ),
     noTrumpSuit: v.optional(v.boolean()),
     revealedCounts: v.optional(v.array(v.number())),
+  }),
+
+  heartsGames: defineTable({
+    roomId: v.id("rooms"),
+    phase: v.union(v.literal("playing"), v.literal("scoring")),
+    hands: v.array(v.array(v.string())), // hands[seatIndex] = card[]
+    currentTrick: v.array(
+      v.object({
+        seat: v.number(),
+        cards: v.array(v.string()),
+      })
+    ),
+    leadSeat: v.number(),
+    currentTurn: v.number(),
+    tricks: v.array(
+      v.object({
+        plays: v.array(
+          v.object({
+            seat: v.number(),
+            cards: v.array(v.string()),
+          })
+        ),
+        winner: v.number(),
+      })
+    ),
+    capturedCards: v.array(v.array(v.string())), // capturedCards[seatIndex] = all won cards
+    roundNumber: v.number(),
   }),
 });

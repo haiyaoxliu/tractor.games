@@ -12,6 +12,7 @@ interface RoomLobbyProps {
   onStart: () => void;
   canStart: boolean;
   sessionId: string;
+  gameType?: string;
 }
 
 const SEAT_LABELS = ["South (You)", "West", "North", "East"];
@@ -22,7 +23,10 @@ export default function RoomLobby({
   onStart,
   canStart,
   sessionId,
+  gameType,
 }: RoomLobbyProps) {
+  const isHearts = gameType === "hearts";
+  const gameName = isHearts ? "Hearts" : "Tractor";
   const isHost = players[0]?.sessionId === sessionId;
 
   return (
@@ -37,7 +41,7 @@ export default function RoomLobby({
         textAlign: "center",
       }}
     >
-      <h2 style={{ margin: "0 0 0.5rem", fontSize: "1.5rem" }}>Room Lobby</h2>
+      <h2 style={{ margin: "0 0 0.5rem", fontSize: "1.5rem" }}>{gameName} Lobby</h2>
       <div
         style={{
           fontSize: "2rem",
@@ -71,7 +75,7 @@ export default function RoomLobby({
               }}
             >
               <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                Seat {seat + 1} {seat % 2 === 0 ? "(Team A)" : "(Team B)"}
+                Seat {seat + 1}{!isHearts ? (seat % 2 === 0 ? " (Team A)" : " (Team B)") : ""}
               </span>
               <span style={{ color: player ? "#155724" : "#999" }}>
                 {player ? player.name : "Empty"}

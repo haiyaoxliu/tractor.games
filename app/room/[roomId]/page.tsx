@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { getSessionId, getPlayerName } from "@/lib/cardUtils";
 import RoomLobby from "@/components/RoomLobby";
 import GameBoard from "@/components/GameBoard";
+import HeartsGameBoard from "@/components/HeartsGameBoard";
 
 export default function RoomPage() {
   const params = useParams();
@@ -22,12 +23,23 @@ export default function RoomPage() {
 
   const room = useQuery(api.rooms.getRoomByCode, { roomCode });
   const startGame = useMutation(api.game.startGame);
+  const startHeartsGame = useMutation(api.heartsGame.startHeartsGame);
 
-  // Get game state if game exists
-  const gameId = room?.gameId;
-  const gameState = useQuery(
+  const gameType = room?.gameType ?? "tractor";
+  const isHearts = gameType === "hearts";
+
+  // Get tractor game state if applicable
+  const tractorGameId = room?.gameId;
+  const tractorState = useQuery(
     api.gameQueries.getGameState,
-    gameId && sessionId ? { gameId, sessionId } : "skip"
+    !isHearts && tractorGameId && sessionId ? { gameId: tractorGameId, sessionId } : "skip"
+  );
+
+  // Get hearts game state if applicable
+  const heartsGameId = room?.heartsGameId;
+  const heartsState = useQuery(
+    api.heartsGameQueries.getHeartsGameState,
+    isHearts && heartsGameId && sessionId ? { gameId: heartsGameId, sessionId } : "skip"
   );
 
   if (!sessionId) {
@@ -142,9 +154,14 @@ export default function RoomPage() {
           players={room.players}
           canStart={room.players.length === 4}
           sessionId={sessionId}
+          gameType={gameType}
           onStart={async () => {
             try {
-              await startGame({ roomId: room._id });
+              if (isHearts) {
+                await startHeartsGame({ roomId: room._id });
+              } else {
+                await startGame({ roomId: room._id });
+              }
             } catch (e) {
               alert(e instanceof Error ? e.message : "Failed to start");
             }
@@ -154,11 +171,20 @@ export default function RoomPage() {
     );
   }
 
-  // Game view
-  if (gameState) {
+  // Hearts game view
+  if (isHearts && heartsState) {
     return (
       <main style={{ minHeight: "100vh", padding: "1rem", background: "#1a1a2e" }}>
-        <GameBoard game={gameState} sessionId={sessionId} />
+        <HeartsGameBoard game={heartsState} sessionId={sessionId} />
+      </main>
+    );
+  }
+
+  // Tractor game view
+  if (!isHearts && tractorState) {
+    return (
+      <main style={{ minHeight: "100vh", padding: "1rem", background: "#1a1a2e" }}>
+        <GameBoard game={tractorState} sessionId={sessionId} />
       </main>
     );
   }

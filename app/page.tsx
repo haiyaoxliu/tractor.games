@@ -24,7 +24,7 @@ export default function Home() {
     }
   }, [])
 
-  const handleCreate = async () => {
+  const handleCreate = async (gameType: "tractor" | "hearts") => {
     if (!name.trim()) { setError('Enter a name'); return }
     setIsLoading(true)
     setError(null)
@@ -33,6 +33,7 @@ export default function Home() {
       const { roomCode: code } = await createRoom({
         name: name.trim(),
         sessionId: getSessionId(),
+        gameType,
       })
       window.location.href = `/room/${code}`
     } catch (err) {
@@ -66,8 +67,8 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-        <h1 className={styles.title}>Tractor 升级</h1>
-        <p className={styles.subtitle}>4-player trick-taking card game</p>
+        <h1 className={styles.title}>Card Games</h1>
+        <p className={styles.subtitle}>Trick-taking card games for 4 players</p>
 
         <div className={styles.form}>
           <div className={styles.inputGroup}>
@@ -91,13 +92,30 @@ export default function Home() {
 
           {error && <div className={styles.error}>{error}</div>}
 
-          <button
-            className={styles.button}
-            onClick={handleCreate}
-            disabled={isLoading || !name.trim()}
-          >
-            {isLoading ? 'Loading...' : 'Create Room'}
-          </button>
+          <div className={styles.gameGrid}>
+            <div className={styles.gameTile}>
+              <h3 className={styles.gameTileTitle}>Tractor 升级</h3>
+              <p className={styles.gameTileDesc}>Team-based trick-taking with trump declaration, kitty, and rank progression.</p>
+              <button
+                className={styles.button}
+                onClick={() => handleCreate("tractor")}
+                disabled={isLoading || !name.trim()}
+              >
+                {isLoading ? 'Loading...' : 'Create Room'}
+              </button>
+            </div>
+            <div className={styles.gameTile}>
+              <h3 className={styles.gameTileTitle}>Hearts 拱猪</h3>
+              <p className={styles.gameTileDesc}>Free-for-all trick avoidance with Gong Zhu scoring: dodge hearts, QD, and the TC multiplier.</p>
+              <button
+                className={styles.button}
+                onClick={() => handleCreate("hearts")}
+                disabled={isLoading || !name.trim()}
+              >
+                {isLoading ? 'Loading...' : 'Create Room'}
+              </button>
+            </div>
+          </div>
 
           <div className={styles.divider}>
             <span>or join existing</span>

@@ -11,8 +11,8 @@ function generateRoomCode(): string {
 }
 
 export const createRoom = mutation({
-  args: { name: v.string(), sessionId: v.string() },
-  handler: async (ctx, { name, sessionId }) => {
+  args: { name: v.string(), sessionId: v.string(), gameType: v.optional(v.string()) },
+  handler: async (ctx, { name, sessionId, gameType }) => {
     // Generate unique room code
     let roomCode: string;
     let existing;
@@ -24,13 +24,31 @@ export const createRoom = mutation({
         .first();
     } while (existing);
 
-    const roomId = await ctx.db.insert("rooms", {
+    const resolvedGameType = gameType === "hearts" ? "hearts" as const : "tractor" as const;
+
+    const roomData: {
+      roomCode: string;
+      players: { name: string; sessionId: string; seat: number }[];
+      status: "waiting";
+      gameType: "tractor" | "hearts";
+      teamRanks?: number[];
+      defendingTeamIndex?: number;
+      heartsScores?: { roundNumber: number; scores: number[] }[];
+    } = {
       roomCode,
       players: [{ name, sessionId, seat: 0 }],
       status: "waiting",
-      teamRanks: [0, 0],
-      defendingTeamIndex: 0,
-    });
+      gameType: resolvedGameType,
+    };
+
+    if (resolvedGameType === "tractor") {
+      roomData.teamRanks = [0, 0];
+      roomData.defendingTeamIndex = 0;
+    } else {
+      roomData.heartsScores = [];
+    }
+
+    const roomId = await ctx.db.insert("rooms", roomData);
 
     return { roomId, roomCode };
   },

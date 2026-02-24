@@ -12,7 +12,7 @@
   border-radius: 16px;
   padding: 3rem;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  max-width: 500px;
+  max-width: 600px;
   width: 100%;
   text-align: center;
 }
@@ -136,7 +136,44 @@
   gap: 1rem;
 }
 
+.gameGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.gameTile {
+  background: #f8f9fa;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.gameTile:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.gameTileTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 0.5rem;
+}
+
+.gameTileDesc {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
 @media (max-width: 600px) {
+  .gameGrid {
+    grid-template-columns: 1fr;
+  }
   .container {
     padding: 2rem 1.5rem;
   }

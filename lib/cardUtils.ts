@@ -47,20 +47,35 @@ export function cardColor(card: string): string {
 
 export function getSessionId(): string {
   if (typeof window === "undefined") return "";
-  let id = sessionStorage.getItem("tractor_session_id");
+  // Migrate from old key
+  let id = sessionStorage.getItem("card_games_session_id");
+  if (!id) {
+    id = sessionStorage.getItem("tractor_session_id");
+    if (id) {
+      sessionStorage.setItem("card_games_session_id", id);
+    }
+  }
   if (!id) {
     id = crypto.randomUUID();
-    sessionStorage.setItem("tractor_session_id", id);
+    sessionStorage.setItem("card_games_session_id", id);
   }
   return id;
 }
 
 export function getPlayerName(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("tractor_player_name");
+  // Migrate from old key
+  let name = localStorage.getItem("card_games_player_name");
+  if (!name) {
+    name = localStorage.getItem("tractor_player_name");
+    if (name) {
+      localStorage.setItem("card_games_player_name", name);
+    }
+  }
+  return name;
 }
 
 export function setPlayerName(name: string): void {
   if (typeof window === "undefined") return;
-  localStorage.setItem("tractor_player_name", name);
+  localStorage.setItem("card_games_player_name", name);
 }
