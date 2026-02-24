@@ -24,7 +24,7 @@ export default function Home() {
     }
   }, [])
 
-  const handleCreate = async (gameType: "tractor" | "hearts") => {
+  const handleCreate = async (gameType: "tractor" | "hearts" | "werewolf") => {
     if (!name.trim()) { setError('Enter a name'); return }
     setIsLoading(true)
     setError(null)
@@ -68,7 +68,7 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.container}>
         <h1 className={styles.title}>Card Games</h1>
-        <p className={styles.subtitle}>Trick-taking card games for 4 players</p>
+        <p className={styles.subtitle}>Card games and party games with friends</p>
 
         <div className={styles.form}>
           <div className={styles.inputGroup}>
@@ -110,6 +110,17 @@ export default function Home() {
               <button
                 className={styles.button}
                 onClick={() => handleCreate("hearts")}
+                disabled={isLoading || !name.trim()}
+              >
+                {isLoading ? 'Loading...' : 'Create Room'}
+              </button>
+            </div>
+            <div className={styles.gameTile}>
+              <h3 className={styles.gameTileTitle}>Werewolf 狼人杀</h3>
+              <p className={styles.gameTileDesc}>One Night social deduction for 5-16 players. Roles, night actions, discussion, and voting.</p>
+              <button
+                className={styles.button}
+                onClick={() => handleCreate("werewolf")}
                 disabled={isLoading || !name.trim()}
               >
                 {isLoading ? 'Loading...' : 'Create Room'}

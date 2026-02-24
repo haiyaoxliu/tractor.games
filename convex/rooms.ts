@@ -24,13 +24,15 @@ export const createRoom = mutation({
         .first();
     } while (existing);
 
-    const resolvedGameType = gameType === "hearts" ? "hearts" as const : "tractor" as const;
+    const resolvedGameType = gameType === "hearts" ? "hearts" as const
+      : gameType === "werewolf" ? "werewolf" as const
+      : "tractor" as const;
 
     const roomData: {
       roomCode: string;
       players: { name: string; sessionId: string; seat: number }[];
       status: "waiting";
-      gameType: "tractor" | "hearts";
+      gameType: "tractor" | "hearts" | "werewolf";
       teamRanks?: number[];
       defendingTeamIndex?: number;
       heartsScores?: { roundNumber: number; scores: number[] }[];
@@ -44,7 +46,7 @@ export const createRoom = mutation({
     if (resolvedGameType === "tractor") {
       roomData.teamRanks = [0, 0];
       roomData.defendingTeamIndex = 0;
-    } else {
+    } else if (resolvedGameType === "hearts") {
       roomData.heartsScores = [];
     }
 
@@ -71,7 +73,8 @@ export const joinRoom = mutation({
       return { roomId: room._id, roomCode: room.roomCode };
     }
 
-    if (room.players.length >= 4) throw new Error("Room is full");
+    const maxPlayers = room.gameType === "werewolf" ? 16 : 4;
+    if (room.players.length >= maxPlayers) throw new Error("Room is full");
 
     // Assign next available seat
     const takenSeats = new Set(room.players.map((p) => p.seat));
@@ -90,6 +93,27 @@ export const getRoom = query({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, { roomId }) => {
     return await ctx.db.get(roomId);
+  },
+});
+
+export const leaveRoom = mutation({
+  args: { roomCode: v.string(), sessionId: v.string() },
+  handler: async (ctx, { roomCode, sessionId }) => {
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_roomCode", (q) => q.eq("roomCode", roomCode.toUpperCase()))
+      .first();
+
+    if (!room) throw new Error("Room not found");
+    if (room.status !== "waiting") throw new Error("Cannot leave a game in progress");
+
+    const newPlayers = room.players.filter((p) => p.sessionId !== sessionId);
+
+    if (newPlayers.length === 0) {
+      await ctx.db.delete(room._id);
+    } else {
+      await ctx.db.patch(room._id, { players: newPlayers });
+    }
   },
 });
 

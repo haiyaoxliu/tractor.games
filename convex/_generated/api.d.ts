@@ -15,6 +15,9 @@ import type * as heartsGame from "../heartsGame.js";
 import type * as heartsGameLogic from "../heartsGameLogic.js";
 import type * as heartsGameQueries from "../heartsGameQueries.js";
 import type * as rooms from "../rooms.js";
+import type * as werewolfGame from "../werewolfGame.js";
+import type * as werewolfGameLogic from "../werewolfGameLogic.js";
+import type * as werewolfGameQueries from "../werewolfGameQueries.js";
 
 import type {
   ApiFromModules,
@@ -30,6 +33,9 @@ declare const fullApi: ApiFromModules<{
   heartsGameLogic: typeof heartsGameLogic;
   heartsGameQueries: typeof heartsGameQueries;
   rooms: typeof rooms;
+  werewolfGame: typeof werewolfGame;
+  werewolfGameLogic: typeof werewolfGameLogic;
+  werewolfGameQueries: typeof werewolfGameQueries;
 }>;
 
 /**
