@@ -59,8 +59,9 @@ export default function GameStatus({
       style={{
         textAlign: "center",
         padding: "0.75rem",
-        background: phase === "scoring" ? "#d4edda" : "#e2e3f1",
-        borderRadius: 8,
+        background: phase === "scoring" ? "#ecfdf5" : "var(--panel-tint)",
+        border: "1px solid var(--line)",
+        borderRadius: 10,
         fontWeight: 600,
         fontSize: "1rem",
       }}

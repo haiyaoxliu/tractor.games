@@ -8,25 +8,36 @@
 }
 
 .container {
-  background: white;
+  background: var(--panel);
+  border: 1px solid var(--line);
   border-radius: 16px;
   padding: 3rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  max-width: 600px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.06);
+  max-width: 640px;
   width: 100%;
   text-align: center;
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2.4rem;
   font-weight: 700;
-  color: #333;
+  color: var(--ink);
   margin-bottom: 0.5rem;
 }
 
+.titleSuits {
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  vertical-align: middle;
+  background: linear-gradient(90deg, #18181b 25%, #dc2626 25%, #dc2626 75%, #18181b 75%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .subtitle {
-  font-size: 1.1rem;
-  color: #666;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
   margin-bottom: 2rem;
 }
 
@@ -65,7 +76,7 @@
 
 .input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--accent);
 }
 
 .input:disabled {
@@ -89,20 +100,21 @@
 }
 
 .button {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+  background: #4338ca;
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.3);
 }
 
 .button:active:not(:disabled) {
@@ -143,31 +155,42 @@
 }
 
 .gameTile {
-  background: #f8f9fa;
-  border: 2px solid #e0e0e0;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 1.25rem;
   text-align: center;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .gameTile:hover {
-  border-color: #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  border-color: var(--accent-soft);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.12);
+  transform: translateY(-2px);
 }
 
 .gameTileTitle {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #333;
-  margin: 0 0 0.5rem;
+  color: var(--ink);
+  margin: 0 0 0.15rem;
+}
+
+.gameTilePlayers {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
 }
 
 .gameTileDesc {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--ink-soft);
   margin: 0 0 1rem;
   line-height: 1.4;
+  flex: 1;
 }
 
 @media (max-width: 600px) {

@@ -24,7 +24,7 @@ export default function Home() {
     }
   }, [])
 
-  const handleCreate = async (gameType: "tractor" | "hearts") => {
+  const handleCreate = async (gameType: "tractor" | "hearts" | "wizard" | "skullking") => {
     if (!name.trim()) { setError('Enter a name'); return }
     setIsLoading(true)
     setError(null)
@@ -64,11 +64,45 @@ export default function Home() {
     }
   }
 
+  const games: {
+    type: "tractor" | "hearts" | "wizard" | "skullking"
+    title: string
+    players: string
+    desc: string
+  }[] = [
+    {
+      type: "tractor",
+      title: "Tractor 升级",
+      players: "4 players",
+      desc: "Team-based trick-taking with trump declaration, kitty, and rank progression.",
+    },
+    {
+      type: "hearts",
+      title: "Gong Zhu 拱猪",
+      players: "4 players",
+      desc: "Trick avoidance with Gong Zhu scoring: dodge hearts, the pig 猪, and the doubler.",
+    },
+    {
+      type: "wizard",
+      title: "Wizard",
+      players: "3–6 players",
+      desc: "Predict your exact trick count each round — wizards beat all, jesters beat none.",
+    },
+    {
+      type: "skullking",
+      title: "Skull King",
+      players: "3–6 players",
+      desc: "Pirate-themed exact bidding: mermaids sink the Skull King, the Skull King sinks pirates.",
+    },
+  ]
+
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-        <h1 className={styles.title}>Card Games</h1>
-        <p className={styles.subtitle}>Trick-taking card games for 4 players</p>
+        <h1 className={styles.title}>
+          <span className={styles.titleSuits}>♠♥♦♣</span> Card Games
+        </h1>
+        <p className={styles.subtitle}>Trick-taking games to play with friends</p>
 
         <div className={styles.form}>
           <div className={styles.inputGroup}>
@@ -93,28 +127,20 @@ export default function Home() {
           {error && <div className={styles.error}>{error}</div>}
 
           <div className={styles.gameGrid}>
-            <div className={styles.gameTile}>
-              <h3 className={styles.gameTileTitle}>Tractor 升级</h3>
-              <p className={styles.gameTileDesc}>Team-based trick-taking with trump declaration, kitty, and rank progression.</p>
-              <button
-                className={styles.button}
-                onClick={() => handleCreate("tractor")}
-                disabled={isLoading || !name.trim()}
-              >
-                {isLoading ? 'Loading...' : 'Create Room'}
-              </button>
-            </div>
-            <div className={styles.gameTile}>
-              <h3 className={styles.gameTileTitle}>Hearts 拱猪</h3>
-              <p className={styles.gameTileDesc}>Free-for-all trick avoidance with Gong Zhu scoring: dodge hearts, QD, and the TC multiplier.</p>
-              <button
-                className={styles.button}
-                onClick={() => handleCreate("hearts")}
-                disabled={isLoading || !name.trim()}
-              >
-                {isLoading ? 'Loading...' : 'Create Room'}
-              </button>
-            </div>
+            {games.map((g) => (
+              <div key={g.type} className={styles.gameTile}>
+                <h3 className={styles.gameTileTitle}>{g.title}</h3>
+                <div className={styles.gameTilePlayers}>{g.players}</div>
+                <p className={styles.gameTileDesc}>{g.desc}</p>
+                <button
+                  className={styles.button}
+                  onClick={() => handleCreate(g.type)}
+                  disabled={isLoading || !name.trim()}
+                >
+                  {isLoading ? 'Loading...' : 'Create Room'}
+                </button>
+              </div>
+            ))}
           </div>
 
           <div className={styles.divider}>

@@ -4,6 +4,23 @@
   margin: 0;
 }
 
+:root {
+  --bg: #fafafa;
+  --panel: #ffffff;
+  --panel-soft: #f6f6f7;
+  --panel-tint: #eef2ff;
+  --line: #e4e4e7;
+  --line-strong: #d4d4d8;
+  --ink: #18181b;
+  --ink-soft: #52525b;
+  --ink-faint: #a1a1aa;
+  --accent: #4f46e5;
+  --accent-soft: #c7d2fe;
+  --red: #dc2626;
+  --green: #15803d;
+  --gold: #b45309;
+}
+
 html,
 body {
   max-width: 100vw;
@@ -16,11 +33,193 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg);
+  color: var(--ink);
   min-height: 100vh;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* ── Panels ─────────────────────────────────────────────────────────────── */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-block;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--ink-faint);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnPrimary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: #4338ca;
+  border-color: #4338ca;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+}
+
+.btnSmall {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+/* ── Playing cards ──────────────────────────────────────────────────────── */
+
+.playingCard {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 78px;
+  margin: 3px 2px;
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  vertical-align: middle;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.playingCard .cardCorner {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.playingCard .cardCenter {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 10px;
+}
+
+.playingCard .cardLabel {
+  position: absolute;
+  bottom: 4px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+.cardClickable {
+  cursor: pointer;
+}
+
+.cardClickable:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  border-color: var(--ink-faint);
+  z-index: 2;
+}
+
+.cardSelected,
+.cardClickable.cardSelected:hover {
+  transform: translateY(-12px);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft), 0 12px 22px rgba(79, 70, 229, 0.25);
+  z-index: 2;
+}
+
+.cardSmall {
+  width: 42px;
+  height: 60px;
+  margin: 2px 1px;
+  border-radius: 6px;
+}
+
+.cardSmall .cardCorner {
+  top: 3px;
+  left: 4px;
+  font-size: 0.65rem;
+}
+
+.cardSmall .cardCenter {
+  font-size: 1.1rem;
+  margin-top: 8px;
+}
+
+.cardSmall .cardLabel {
+  display: none;
+}
+
+.cardBack {
+  background: repeating-linear-gradient(
+    45deg,
+    #eef2ff,
+    #eef2ff 4px,
+    #e0e7ff 4px,
+    #e0e7ff 8px
+  );
+  border-color: var(--accent-soft);
+}
+
+.cardBack .cardCenter {
+  color: var(--accent);
+  opacity: 0.55;
+  margin-top: 0;
+}
+
+/* Fanned hand: cards overlap slightly and separate on hover */
+.handFan {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 12px 8px 4px;
+}
+
+.handFan .playingCard:not(:first-child) {
+  margin-left: -14px;
+}
+
+@media (max-width: 600px) {
+  .handFan .playingCard:not(:first-child) {
+    margin-left: -20px;
+  }
 }

@@ -26,7 +26,7 @@ export default function TestPage() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", background: "#1a1a2e", padding: "1rem" }}>
+    <main style={{ minHeight: "100vh", padding: "1rem" }}>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         {/* Header */}
         <div

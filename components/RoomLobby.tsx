@@ -1,5 +1,7 @@
 "use client";
 
+import { GAME_META, resolveGameType } from "@/lib/gameMeta";
+
 interface Player {
   name: string;
   sessionId: string;
@@ -15,8 +17,6 @@ interface RoomLobbyProps {
   gameType?: string;
 }
 
-const SEAT_LABELS = ["South (You)", "West", "North", "East"];
-
 export default function RoomLobby({
   roomCode,
   players,
@@ -25,41 +25,35 @@ export default function RoomLobby({
   sessionId,
   gameType,
 }: RoomLobbyProps) {
-  const isHearts = gameType === "hearts";
-  const gameName = isHearts ? "Hearts" : "Tractor";
+  const type = resolveGameType(gameType);
+  const meta = GAME_META[type];
   const isHost = players[0]?.sessionId === sessionId;
+  const isTractor = type === "tractor";
+
+  // Show seats for everyone joined plus the next empty one (up to max)
+  const seatCount = Math.max(meta.min, Math.min(players.length + 1, meta.max));
 
   return (
-    <div
-      style={{
-        maxWidth: 500,
-        margin: "0 auto",
-        background: "#fff",
-        borderRadius: 16,
-        padding: "2rem",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-        textAlign: "center",
-      }}
-    >
-      <h2 style={{ margin: "0 0 0.5rem", fontSize: "1.5rem" }}>{gameName} Lobby</h2>
+    <div className="panel" style={{ maxWidth: 460, width: "100%", padding: "2rem", textAlign: "center" }}>
+      <h2 style={{ margin: "0 0 0.25rem", fontSize: "1.4rem" }}>{meta.name}</h2>
+      <p style={{ color: "var(--ink-soft)", fontSize: "0.85rem", margin: 0 }}>
+        Share this code with friends to join
+      </p>
       <div
         style={{
-          fontSize: "2rem",
+          fontSize: "2.2rem",
           fontWeight: 700,
-          letterSpacing: "0.3em",
-          color: "#667eea",
-          margin: "1rem 0",
-          fontFamily: "monospace",
+          letterSpacing: "0.35em",
+          color: "var(--accent)",
+          margin: "1rem 0 1.5rem",
+          fontFamily: "ui-monospace, monospace",
         }}
       >
         {roomCode}
       </div>
-      <p style={{ color: "#666", fontSize: "0.9rem", marginBottom: "1.5rem" }}>
-        Share this code with friends to join
-      </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.5rem" }}>
-        {[0, 1, 2, 3].map((seat) => {
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.25rem" }}>
+        {Array.from({ length: seatCount }, (_, seat) => {
           const player = players.find((p) => p.seat === seat);
           return (
             <div
@@ -68,16 +62,17 @@ export default function RoomLobby({
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: "0.75rem 1rem",
-                background: player ? "#d4edda" : "#f8f9fa",
-                borderRadius: 8,
-                border: `1px solid ${player ? "#28a745" : "#ddd"}`,
+                padding: "0.65rem 1rem",
+                background: player ? "var(--panel-tint)" : "var(--panel-soft)",
+                borderRadius: 10,
+                border: `1px solid ${player ? "var(--accent-soft)" : "var(--line)"}`,
               }}
             >
               <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                Seat {seat + 1}{!isHearts ? (seat % 2 === 0 ? " (Team A)" : " (Team B)") : ""}
+                Seat {seat + 1}
+                {isTractor ? (seat % 2 === 0 ? " · Team A" : " · Team B") : ""}
               </span>
-              <span style={{ color: player ? "#155724" : "#999" }}>
+              <span style={{ color: player ? "var(--ink)" : "var(--ink-faint)" }}>
                 {player ? player.name : "Empty"}
               </span>
             </div>
@@ -85,33 +80,20 @@ export default function RoomLobby({
         })}
       </div>
 
-      <div style={{ fontSize: "0.85rem", color: "#666", marginBottom: "1rem" }}>
-        {players.length}/4 players joined
-        {players.length < 4 && " — waiting for more..."}
+      <div style={{ fontSize: "0.85rem", color: "var(--ink-soft)", marginBottom: "1rem" }}>
+        {players.length}/{meta.max} players
+        {meta.min !== meta.max && ` · needs at least ${meta.min}`}
+        {players.length < meta.min && " — waiting for more..."}
       </div>
 
-      {isHost && (
-        <button
-          onClick={onStart}
-          disabled={!canStart}
-          style={{
-            padding: "12px 32px",
-            fontSize: "1.1rem",
-            fontWeight: 600,
-            color: "#fff",
-            background: canStart
-              ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-              : "#ccc",
-            border: "none",
-            borderRadius: 8,
-            cursor: canStart ? "pointer" : "not-allowed",
-          }}
-        >
-          {canStart ? "Start Game" : `Waiting for ${4 - players.length} more player(s)`}
+      {isHost ? (
+        <button className="btn btnPrimary" onClick={onStart} disabled={!canStart}>
+          {canStart
+            ? "Start Game"
+            : `Waiting for ${meta.min - players.length} more player(s)`}
         </button>
-      )}
-      {!isHost && (
-        <div style={{ color: "#666", fontStyle: "italic" }}>
+      ) : (
+        <div style={{ color: "var(--ink-soft)", fontStyle: "italic", fontSize: "0.9rem" }}>
           Waiting for host to start the game...
         </div>
       )}

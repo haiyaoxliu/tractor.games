@@ -5,34 +5,60 @@ import { api } from "@/convex/_generated/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getSessionId, getPlayerName } from "@/lib/cardUtils";
+import { GAME_META, resolveGameType } from "@/lib/gameMeta";
 import RoomLobby from "@/components/RoomLobby";
 import GameBoard from "@/components/GameBoard";
 import HeartsGameBoard from "@/components/HeartsGameBoard";
+import BidGameBoard from "@/components/BidGameBoard";
+
+function CenteredNotice({ title, body }: { title: string; body: string }) {
+  return (
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "2rem",
+      }}
+    >
+      <div className="panel" style={{ padding: "2rem", textAlign: "center" }}>
+        <h2>{title}</h2>
+        <p style={{ color: "var(--ink-soft)", margin: "1rem 0" }}>{body}</p>
+        <a href="/" style={{ color: "var(--accent)", fontWeight: 600 }}>
+          Back to Home
+        </a>
+      </div>
+    </main>
+  );
+}
 
 export default function RoomPage() {
   const params = useParams();
   const roomCode = (params.roomId as string).toUpperCase();
 
   const [sessionId, setSessionId] = useState("");
-  const [playerName, setPlayerNameState] = useState<string | null>(null);
 
   useEffect(() => {
     setSessionId(getSessionId());
-    setPlayerNameState(getPlayerName());
+    getPlayerName();
   }, []);
 
   const room = useQuery(api.rooms.getRoomByCode, { roomCode });
   const startGame = useMutation(api.game.startGame);
   const startHeartsGame = useMutation(api.heartsGame.startHeartsGame);
+  const startBidGame = useMutation(api.bidGame.startBidGame);
 
-  const gameType = room?.gameType ?? "tractor";
+  const gameType = resolveGameType(room?.gameType);
   const isHearts = gameType === "hearts";
+  const isTractor = gameType === "tractor";
+  const isBidGame = gameType === "wizard" || gameType === "skullking";
 
   // Get tractor game state if applicable
   const tractorGameId = room?.gameId;
   const tractorState = useQuery(
     api.gameQueries.getGameState,
-    !isHearts && tractorGameId && sessionId ? { gameId: tractorGameId, sessionId } : "skip"
+    isTractor && tractorGameId && sessionId ? { gameId: tractorGameId, sessionId } : "skip"
   );
 
   // Get hearts game state if applicable
@@ -42,103 +68,41 @@ export default function RoomPage() {
     isHearts && heartsGameId && sessionId ? { gameId: heartsGameId, sessionId } : "skip"
   );
 
-  if (!sessionId) {
-    return (
-      <main style={{ padding: "2rem", textAlign: "center" }}>
-        <p>Loading...</p>
-      </main>
-    );
-  }
+  // Get bid game (wizard / skull king) state if applicable
+  const bidGameId = room?.bidGameId;
+  const bidState = useQuery(
+    api.bidGameQueries.getBidGameState,
+    isBidGame && bidGameId && sessionId ? { gameId: bidGameId, sessionId } : "skip"
+  );
 
-  if (room === undefined) {
+  if (!sessionId || room === undefined) {
     return (
-      <main style={{ padding: "2rem", textAlign: "center" }}>
-        <p>Loading room...</p>
+      <main style={{ padding: "3rem", textAlign: "center", color: "var(--ink-soft)" }}>
+        <p>Loading…</p>
       </main>
     );
   }
 
   if (room === null) {
     return (
-      <main
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            padding: "2rem",
-            borderRadius: 16,
-            textAlign: "center",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-          }}
-        >
-          <h2>Room Not Found</h2>
-          <p style={{ color: "#666", margin: "1rem 0" }}>
-            Room code &quot;{roomCode}&quot; does not exist.
-          </p>
-          <a
-            href="/"
-            style={{
-              color: "#667eea",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-          >
-            Back to Home
-          </a>
-        </div>
-      </main>
+      <CenteredNotice
+        title="Room Not Found"
+        body={`Room code "${roomCode}" does not exist.`}
+      />
     );
   }
 
   // Check if player is in the room
   const isInRoom = room.players.some((p) => p.sessionId === sessionId);
-
   if (!isInRoom) {
     return (
-      <main
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            padding: "2rem",
-            borderRadius: 16,
-            textAlign: "center",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-          }}
-        >
-          <h2>Not in Room</h2>
-          <p style={{ color: "#666", margin: "1rem 0" }}>
-            You haven&apos;t joined this room yet.
-          </p>
-          <a
-            href="/"
-            style={{
-              color: "#667eea",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-          >
-            Back to Home
-          </a>
-        </div>
-      </main>
+      <CenteredNotice title="Not in Room" body="You haven't joined this room yet." />
     );
   }
 
   // Lobby view
   if (room.status === "waiting") {
+    const limits = GAME_META[gameType];
     return (
       <main
         style={{
@@ -152,13 +116,17 @@ export default function RoomPage() {
         <RoomLobby
           roomCode={room.roomCode}
           players={room.players}
-          canStart={room.players.length === 4}
+          canStart={
+            room.players.length >= limits.min && room.players.length <= limits.max
+          }
           sessionId={sessionId}
           gameType={gameType}
           onStart={async () => {
             try {
               if (isHearts) {
                 await startHeartsGame({ roomId: room._id });
+              } else if (isBidGame) {
+                await startBidGame({ roomId: room._id });
               } else {
                 await startGame({ roomId: room._id });
               }
@@ -171,27 +139,34 @@ export default function RoomPage() {
     );
   }
 
-  // Hearts game view
+  // Game views
+  if (isBidGame && bidState) {
+    return (
+      <main style={{ minHeight: "100vh", padding: "1rem" }}>
+        <BidGameBoard game={bidState} sessionId={sessionId} />
+      </main>
+    );
+  }
+
   if (isHearts && heartsState) {
     return (
-      <main style={{ minHeight: "100vh", padding: "1rem", background: "#1a1a2e" }}>
+      <main style={{ minHeight: "100vh", padding: "1rem" }}>
         <HeartsGameBoard game={heartsState} sessionId={sessionId} />
       </main>
     );
   }
 
-  // Tractor game view
-  if (!isHearts && tractorState) {
+  if (isTractor && tractorState) {
     return (
-      <main style={{ minHeight: "100vh", padding: "1rem", background: "#1a1a2e" }}>
+      <main style={{ minHeight: "100vh", padding: "1rem" }}>
         <GameBoard game={tractorState} sessionId={sessionId} />
       </main>
     );
   }
 
   return (
-    <main style={{ padding: "2rem", textAlign: "center" }}>
-      <p style={{ color: "#fff" }}>Loading game...</p>
+    <main style={{ padding: "3rem", textAlign: "center", color: "var(--ink-soft)" }}>
+      <p>Loading game…</p>
     </main>
   );
 }

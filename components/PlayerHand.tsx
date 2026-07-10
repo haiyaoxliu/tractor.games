@@ -64,8 +64,8 @@ export default function PlayerHand({
   const canPlayCards = isValidPlayCount && selected.length > 0;
 
   return (
-    <div style={{ textAlign: "center", padding: "1rem 0" }}>
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 0 }}>
+    <div style={{ textAlign: "center", padding: "0.5rem 0" }}>
+      <div className="handFan">
         {sorted.map((card, idx) => (
           <Card
             key={`${card}-${idx}`}
@@ -75,44 +75,28 @@ export default function PlayerHand({
           />
         ))}
       </div>
-      <div style={{ marginTop: "0.75rem", display: "flex", gap: "0.5rem", justifyContent: "center" }}>
-        {isKittyPhase && onDiscardKitty && (
-          <button
-            onClick={handleDiscard}
-            disabled={selected.length !== 8}
-            style={{
-              padding: "8px 20px",
-              fontSize: "1rem",
-              fontWeight: 600,
-              color: "#fff",
-              background: selected.length === 8 ? "#e67e22" : "#ccc",
-              border: "none",
-              borderRadius: 6,
-              cursor: selected.length === 8 ? "pointer" : "not-allowed",
-            }}
-          >
-            Discard {selected.length}/8 to Kitty
-          </button>
-        )}
-        {canPlay && onPlay && !isKittyPhase && (
-          <button
-            onClick={handlePlay}
-            disabled={!canPlayCards}
-            style={{
-              padding: "8px 20px",
-              fontSize: "1rem",
-              fontWeight: 600,
-              color: "#fff",
-              background: canPlayCards ? "#667eea" : "#ccc",
-              border: "none",
-              borderRadius: 6,
-              cursor: canPlayCards ? "pointer" : "not-allowed",
-            }}
-          >
-            {singleCardOnly ? "Play Card" : `Play ${selected.length} Card${selected.length !== 1 ? "s" : ""}`}
-          </button>
-        )}
-      </div>
+      {((isKittyPhase && onDiscardKitty) || (canPlay && onPlay && !isKittyPhase)) && (
+        <div style={{ marginTop: "0.75rem", display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+          {isKittyPhase && onDiscardKitty && (
+            <button
+              className="btn btnPrimary"
+              onClick={handleDiscard}
+              disabled={selected.length !== 8}
+            >
+              Discard {selected.length}/8 to Kitty
+            </button>
+          )}
+          {canPlay && onPlay && !isKittyPhase && (
+            <button
+              className="btn btnPrimary"
+              onClick={handlePlay}
+              disabled={!canPlayCards}
+            >
+              {singleCardOnly ? "Play Card" : `Play ${selected.length} Card${selected.length !== 1 ? "s" : ""}`}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

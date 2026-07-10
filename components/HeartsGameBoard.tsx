@@ -75,10 +75,9 @@ export default function HeartsGameBoard({ game, sessionId }: HeartsGameBoardProp
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "1rem" }}>
       {/* Game Status */}
       <div
+        className="panel"
         style={{
-          background: "#fff",
-          borderRadius: 8,
-          padding: "0.5rem 1rem",
+          padding: "0.6rem 1rem",
           textAlign: "center",
           marginBottom: "0.75rem",
           fontSize: "0.9rem",
@@ -87,7 +86,7 @@ export default function HeartsGameBoard({ game, sessionId }: HeartsGameBoardProp
         <strong>Hearts (拱猪)</strong> — Round {game.roundNumber} — Trick {game.trickCount + 1}/13
         {game.phase === "playing" && (
           <span>
-            {" "}— {isMyTurn ? <strong style={{ color: "#667eea" }}>Your Turn</strong> : `${turnPlayer?.name}'s turn`}
+            {" "}— {isMyTurn ? <strong style={{ color: "var(--accent)" }}>your turn</strong> : `${turnPlayer?.name}'s turn`}
           </span>
         )}
         {game.phase === "scoring" && <span> — <strong>Round Over</strong></span>}
@@ -149,9 +148,9 @@ export default function HeartsGameBoard({ game, sessionId }: HeartsGameBoardProp
       {/* Trick Area */}
       {(game.phase === "playing" || game.phase === "scoring") && (
         <div
+          className="panel"
           style={{
-            background: "#2d5a27",
-            borderRadius: 12,
+            background: "var(--panel-soft)",
             padding: "1rem",
             margin: "0.5rem 0",
             minHeight: 200,
@@ -163,9 +162,9 @@ export default function HeartsGameBoard({ game, sessionId }: HeartsGameBoardProp
             mySeat={game.mySeat}
           />
           {game.currentTrick.length === 0 && lastTrick && game.phase === "playing" && (
-            <div style={{ textAlign: "center", color: "#90EE90", fontSize: "0.85rem" }}>
+            <div style={{ textAlign: "center", color: "var(--ink-soft)", fontSize: "0.85rem" }}>
               Last trick won by{" "}
-              {game.players.find((p) => p.seat === lastTrick.winner)?.name ?? "unknown"}
+              <strong>{game.players.find((p) => p.seat === lastTrick.winner)?.name ?? "unknown"}</strong>
             </div>
           )}
         </div>
@@ -173,18 +172,18 @@ export default function HeartsGameBoard({ game, sessionId }: HeartsGameBoardProp
 
       {/* My Hand */}
       <div
+        className="panel"
         style={{
-          background: "#fff",
-          borderRadius: 12,
           padding: "0.5rem",
           marginTop: "0.5rem",
-          border: isMyTurn ? "3px solid #667eea" : "1px solid #ddd",
+          borderColor: isMyTurn ? "var(--accent)" : undefined,
+          boxShadow: isMyTurn ? "0 0 0 2px var(--accent-soft)" : undefined,
         }}
       >
-        <div style={{ fontSize: "0.8rem", color: "#666", textAlign: "center", marginBottom: 4 }}>
+        <div style={{ fontSize: "0.8rem", color: "var(--ink-soft)", textAlign: "center", marginTop: 4 }}>
           Your Hand ({myHand.length} cards)
           {isMyTurn && game.phase === "playing" && (
-            <span style={{ color: "#667eea", fontWeight: 700 }}> — YOUR TURN</span>
+            <span style={{ color: "var(--accent)", fontWeight: 700 }}> — your turn</span>
           )}
         </div>
         <PlayerHand
@@ -199,33 +198,19 @@ export default function HeartsGameBoard({ game, sessionId }: HeartsGameBoardProp
       {/* Scoring Phase */}
       {game.phase === "scoring" && (
         <div
+          className="panel"
           style={{
             textAlign: "center",
             padding: "1.5rem",
-            background: "#d4edda",
-            borderRadius: 12,
             marginTop: "1rem",
           }}
         >
-          <h2 style={{ margin: "0 0 1rem" }}>Round {game.roundNumber} Complete!</h2>
+          <h2 style={{ margin: "0 0 1rem", fontSize: "1.2rem" }}>Round {game.roundNumber} complete</h2>
           <HeartsScoringBreakdown
             capturedCards={game.capturedCards}
             players={game.players}
           />
-          <button
-            onClick={handleNextRound}
-            style={{
-              padding: "10px 24px",
-              fontSize: "1.1rem",
-              fontWeight: 700,
-              color: "#fff",
-              background: "#667eea",
-              border: "none",
-              borderRadius: 8,
-              cursor: "pointer",
-              marginTop: "1rem",
-            }}
-          >
+          <button className="btn btnPrimary" onClick={handleNextRound} style={{ marginTop: "1rem" }}>
             Next Round
           </button>
         </div>

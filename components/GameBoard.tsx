@@ -216,34 +216,10 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
             Drawing Cards ({myRevealedCount} / {myTotalCards})
           </p>
           <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
-            <button
-              onClick={() => handleReveal(false)}
-              style={{
-                padding: "8px 20px",
-                fontSize: "1rem",
-                fontWeight: 600,
-                color: "#fff",
-                background: "#1976d2",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
-            >
+            <button className="btn btnPrimary" onClick={() => handleReveal(false)}>
               Draw Card
             </button>
-            <button
-              onClick={() => handleReveal(true)}
-              style={{
-                padding: "8px 20px",
-                fontSize: "0.9rem",
-                fontWeight: 600,
-                color: "#1976d2",
-                background: "#e3f2fd",
-                border: "2px solid #1976d2",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
-            >
+            <button className="btn" onClick={() => handleReveal(true)}>
               Reveal All
             </button>
           </div>
@@ -309,9 +285,9 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
       {/* Trick Area */}
       {(game.phase === "playing" || game.phase === "scoring") && (
         <div
+          className="panel"
           style={{
-            background: "#2d5a27",
-            borderRadius: 12,
+            background: "var(--panel-soft)",
             padding: "1rem",
             margin: "0.5rem 0",
             minHeight: 200,
@@ -324,9 +300,9 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
           />
           {/* Show last trick winner */}
           {game.currentTrick.length === 0 && lastTrick && (
-            <div style={{ textAlign: "center", color: "#90EE90", fontSize: "0.85rem" }}>
+            <div style={{ textAlign: "center", color: "var(--ink-soft)", fontSize: "0.85rem" }}>
               Last trick won by{" "}
-              {game.players.find((p) => p.seat === lastTrick.winner)?.name ?? "unknown"}
+              <strong>{game.players.find((p) => p.seat === lastTrick.winner)?.name ?? "unknown"}</strong>
             </div>
           )}
         </div>
@@ -334,18 +310,18 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
 
       {/* My Hand */}
       <div
+        className="panel"
         style={{
-          background: "#fff",
-          borderRadius: 12,
           padding: "0.5rem",
           marginTop: "0.5rem",
-          border: isMyTurn ? "3px solid #667eea" : "1px solid #ddd",
+          borderColor: isMyTurn ? "var(--accent)" : undefined,
+          boxShadow: isMyTurn ? "0 0 0 2px var(--accent-soft)" : undefined,
         }}
       >
-        <div style={{ fontSize: "0.8rem", color: "#666", textAlign: "center", marginBottom: 4 }}>
+        <div style={{ fontSize: "0.8rem", color: "var(--ink-soft)", textAlign: "center", marginTop: 4 }}>
           Your Hand ({myHand.length} cards)
           {isMyTurn && game.phase === "playing" && (
-            <span style={{ color: "#667eea", fontWeight: 700 }}> — YOUR TURN</span>
+            <span style={{ color: "var(--accent)", fontWeight: 700 }}> — your turn</span>
           )}
         </div>
         <PlayerHand
@@ -363,11 +339,11 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
       {/* Scoring Results */}
       {game.phase === "scoring" && (
         <div
+          className="panel"
           style={{
             textAlign: "center",
             padding: "2rem",
-            background: matchWinner !== null ? "#fff3cd" : "#d4edda",
-            borderRadius: 12,
+            background: matchWinner !== null ? "#fffbeb" : undefined,
             marginTop: "1rem",
           }}
         >
@@ -411,20 +387,7 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
                 </div>
               </div>
 
-              <button
-                onClick={handleNextRound}
-                style={{
-                  padding: "10px 24px",
-                  fontSize: "1.1rem",
-                  fontWeight: 700,
-                  color: "#fff",
-                  background: "#667eea",
-                  border: "none",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  marginTop: "0.5rem",
-                }}
-              >
+              <button className="btn btnPrimary" onClick={handleNextRound} style={{ marginTop: "0.5rem" }}>
                 Next Round
               </button>
             </>

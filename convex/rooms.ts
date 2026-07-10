@@ -10,6 +10,22 @@ function generateRoomCode(): string {
   return code;
 }
 
+export type GameType = "tractor" | "hearts" | "wizard" | "skullking";
+
+// min/max players per game
+export const GAME_LIMITS: Record<GameType, { min: number; max: number }> = {
+  tractor: { min: 4, max: 4 },
+  hearts: { min: 4, max: 4 },
+  wizard: { min: 3, max: 6 },
+  skullking: { min: 3, max: 6 },
+};
+
+function resolveGameType(gameType: string | undefined): GameType {
+  if (gameType === "hearts" || gameType === "wizard" || gameType === "skullking")
+    return gameType;
+  return "tractor";
+}
+
 export const createRoom = mutation({
   args: { name: v.string(), sessionId: v.string(), gameType: v.optional(v.string()) },
   handler: async (ctx, { name, sessionId, gameType }) => {
@@ -24,16 +40,17 @@ export const createRoom = mutation({
         .first();
     } while (existing);
 
-    const resolvedGameType = gameType === "hearts" ? "hearts" as const : "tractor" as const;
+    const resolvedGameType = resolveGameType(gameType);
 
     const roomData: {
       roomCode: string;
       players: { name: string; sessionId: string; seat: number }[];
       status: "waiting";
-      gameType: "tractor" | "hearts";
+      gameType: GameType;
       teamRanks?: number[];
       defendingTeamIndex?: number;
       heartsScores?: { roundNumber: number; scores: number[] }[];
+      bidScores?: never[];
     } = {
       roomCode,
       players: [{ name, sessionId, seat: 0 }],
@@ -44,8 +61,10 @@ export const createRoom = mutation({
     if (resolvedGameType === "tractor") {
       roomData.teamRanks = [0, 0];
       roomData.defendingTeamIndex = 0;
-    } else {
+    } else if (resolvedGameType === "hearts") {
       roomData.heartsScores = [];
+    } else {
+      roomData.bidScores = [];
     }
 
     const roomId = await ctx.db.insert("rooms", roomData);
@@ -71,7 +90,8 @@ export const joinRoom = mutation({
       return { roomId: room._id, roomCode: room.roomCode };
     }
 
-    if (room.players.length >= 4) throw new Error("Room is full");
+    const limits = GAME_LIMITS[resolveGameType(room.gameType)];
+    if (room.players.length >= limits.max) throw new Error("Room is full");
 
     // Assign next available seat
     const takenSeats = new Set(room.players.map((p) => p.seat));

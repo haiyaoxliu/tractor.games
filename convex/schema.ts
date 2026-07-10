@@ -16,7 +16,14 @@ export default defineSchema({
       v.literal("playing"),
       v.literal("finished")
     ),
-    gameType: v.optional(v.union(v.literal("tractor"), v.literal("hearts"))),
+    gameType: v.optional(
+      v.union(
+        v.literal("tractor"),
+        v.literal("hearts"),
+        v.literal("wizard"),
+        v.literal("skullking")
+      )
+    ),
     gameId: v.optional(v.id("games")),
     teamRanks: v.optional(v.array(v.number())), // [team0&2 rank index, team1&3 rank index] into RANKS
     defendingTeamIndex: v.optional(v.number()), // 0 or 1 — which team is defending
@@ -24,6 +31,14 @@ export default defineSchema({
     heartsScores: v.optional(v.array(v.object({
       roundNumber: v.number(),
       scores: v.array(v.number()),
+    }))),
+    bidGameId: v.optional(v.id("bidGames")),
+    bidScores: v.optional(v.array(v.object({
+      roundNumber: v.number(),
+      bids: v.array(v.number()),
+      tricks: v.array(v.number()),
+      scores: v.array(v.number()), // round deltas
+      totals: v.array(v.number()), // running totals after this round
     }))),
   }).index("by_roomCode", ["roomCode"]),
 
@@ -102,5 +117,47 @@ export default defineSchema({
     ),
     capturedCards: v.array(v.array(v.string())), // capturedCards[seatIndex] = all won cards
     roundNumber: v.number(),
+  }),
+
+  // Shared table for bid-then-play trick games (Wizard, Skull King)
+  bidGames: defineTable({
+    roomId: v.id("rooms"),
+    gameType: v.union(v.literal("wizard"), v.literal("skullking")),
+    phase: v.union(
+      v.literal("choosingTrump"), // wizard only: dealer picks trump after a wizard is flipped
+      v.literal("bidding"),
+      v.literal("playing"),
+      v.literal("scoring"), // round over, showing results
+      v.literal("finished") // all rounds played
+    ),
+    roundNumber: v.number(),
+    totalRounds: v.number(),
+    numPlayers: v.number(),
+    dealerSeat: v.number(),
+    hands: v.array(v.array(v.string())), // hands[seatIndex] = card[]
+    bids: v.array(v.union(v.number(), v.null())), // null = not yet bid
+    tricksWon: v.array(v.number()),
+    bonuses: v.array(v.number()), // skull king bonus points accrued this round
+    currentTrick: v.array(
+      v.object({
+        seat: v.number(),
+        cards: v.array(v.string()),
+      })
+    ),
+    leadSeat: v.number(),
+    currentTurn: v.number(), // whose turn to bid (wizard) or play
+    tricks: v.array(
+      v.object({
+        plays: v.array(
+          v.object({
+            seat: v.number(),
+            cards: v.array(v.string()),
+          })
+        ),
+        winner: v.number(),
+      })
+    ),
+    trumpCard: v.optional(v.string()), // wizard: the flipped card
+    trumpSuit: v.optional(v.string()), // wizard: "S"|"H"|"D"|"C"|"none"; skullking: "B"
   }),
 });

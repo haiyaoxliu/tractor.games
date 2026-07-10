@@ -18,19 +18,19 @@ export default function OtherPlayerHand({
   showTeamLabel = true,
 }: OtherPlayerHandProps) {
   const borderColor = isCurrentTurn
-    ? "#ffc107"
+    ? "var(--accent)"
     : showTeamLabel && isTeammate !== undefined
-      ? (isTeammate ? "#28a745" : "#dc3545")
-      : "#999";
+      ? (isTeammate ? "var(--green)" : "var(--red)")
+      : "var(--line)";
 
   return (
     <div
+      className="panel"
       style={{
         textAlign: "center",
         padding: "0.5rem",
-        background: isCurrentTurn ? "#fff3cd" : "#f8f9fa",
-        borderRadius: 8,
-        border: `2px solid ${borderColor}`,
+        borderColor,
+        boxShadow: isCurrentTurn ? "0 0 0 2px var(--accent-soft)" : undefined,
         minWidth: 120,
       }}
     >
@@ -38,11 +38,11 @@ export default function OtherPlayerHand({
         {name}
         {showTeamLabel && isTeammate !== undefined && (isTeammate ? " (ally)" : " (opp)")}
       </div>
-      <div style={{ fontSize: "0.85rem", color: "#666" }}>
+      <div style={{ fontSize: "0.85rem", color: "var(--ink-soft)" }}>
         {cardCount} card{cardCount !== 1 ? "s" : ""}
       </div>
       {isCurrentTurn && (
-        <div style={{ fontSize: "0.75rem", color: "#856404", fontWeight: 600, marginTop: 2 }}>
+        <div style={{ fontSize: "0.75rem", color: "var(--accent)", fontWeight: 600, marginTop: 2 }}>
           Thinking...
         </div>
       )}

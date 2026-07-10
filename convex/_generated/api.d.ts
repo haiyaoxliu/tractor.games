@@ -8,6 +8,9 @@
  * @module
  */
 
+import type * as bidGame from "../bidGame.js";
+import type * as bidGameLogic from "../bidGameLogic.js";
+import type * as bidGameQueries from "../bidGameQueries.js";
 import type * as game from "../game.js";
 import type * as gameLogic from "../gameLogic.js";
 import type * as gameQueries from "../gameQueries.js";
@@ -23,6 +26,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  bidGame: typeof bidGame;
+  bidGameLogic: typeof bidGameLogic;
+  bidGameQueries: typeof bidGameQueries;
   game: typeof game;
   gameLogic: typeof gameLogic;
   gameQueries: typeof gameQueries;

@@ -30,18 +30,86 @@ const RANK_DISPLAY: Record<string, string> = {
   K: "K",
 };
 
+// Skull King suits: G parrot, Y chest, P map, B Jolly Roger (trump)
+const SK_SUIT_GLYPHS: Record<string, string> = {
+  G: "🦜",
+  Y: "💰",
+  P: "🗺️",
+  B: "🏴",
+};
+
+const SK_SUIT_COLORS: Record<string, string> = {
+  G: "#15803d",
+  Y: "#b45309",
+  P: "#7c3aed",
+  B: "#18181b",
+};
+
+export const SK_SUIT_NAMES: Record<string, string> = {
+  G: "Parrot",
+  Y: "Chest",
+  P: "Map",
+  B: "Jolly Roger",
+};
+
+// Structured card faces for the Card component
+export interface CardParts {
+  corner: string; // top-left rank/initial
+  cornerSuit?: string; // small suit glyph under the rank
+  center: string; // big center glyph
+  color: string;
+  label?: string; // special-card name along the bottom
+}
+
+export function cardParts(card: string): CardParts {
+  // Tractor jokers
+  if (card === "JK") return { corner: "★", center: "🃏", color: "#b45309", label: "Big Joker" };
+  if (card === "jk") return { corner: "☆", center: "🃏", color: "#52525b", label: "Joker" };
+  // Wizard specials
+  if (card.startsWith("WZ")) return { corner: "W", center: "🧙", color: "#7c3aed", label: "Wizard" };
+  if (card.startsWith("JE")) return { corner: "J", center: "🎭", color: "#52525b", label: "Jester" };
+  // Skull King specials
+  if (card === "SK") return { corner: "SK", center: "💀", color: "#18181b", label: "Skull King" };
+  if (card.startsWith("MM")) return { corner: "M", center: "🧜", color: "#0d9488", label: "Mermaid" };
+  if (card.startsWith("PR")) return { corner: "P", center: "🏴‍☠️", color: "#18181b", label: "Pirate" };
+  if (card.startsWith("ES")) return { corner: "E", center: "🏳️", color: "#71717a", label: "Escape" };
+  // Skull King suited: "01G".."14B"
+  if (/^\d\d[GYPB]$/.test(card)) {
+    const suit = card[2];
+    return {
+      corner: String(parseInt(card.slice(0, 2), 10)),
+      center: SK_SUIT_GLYPHS[suit],
+      color: SK_SUIT_COLORS[suit],
+    };
+  }
+  // Standard rank+suit
+  const rank = card[0];
+  const suit = card[1];
+  return {
+    corner: RANK_DISPLAY[rank] ?? rank,
+    cornerSuit: SUIT_SYMBOLS[suit],
+    center: SUIT_SYMBOLS[suit] ?? suit,
+    color: SUIT_COLORS[suit] ?? "#000",
+  };
+}
+
 export function displayCard(card: string): string {
   if (card === "JK") return "🃏★";
   if (card === "jk") return "🃏☆";
-  const rank = card[0];
-  const suit = card[1];
-  return `${RANK_DISPLAY[rank] ?? rank}${SUIT_SYMBOLS[suit] ?? suit}`;
+  const parts = cardParts(card);
+  if (parts.label) return `${parts.center} ${parts.label}`;
+  return `${parts.corner}${parts.center}`;
 }
 
 export function cardColor(card: string): string {
-  if (card === "JK") return "#d4a017";
-  if (card === "jk") return "#555";
-  const suit = card[1];
+  return cardParts(card).color;
+}
+
+export function suitSymbol(suit: string): string {
+  return SUIT_SYMBOLS[suit] ?? suit;
+}
+
+export function suitColor(suit: string): string {
   return SUIT_COLORS[suit] ?? "#000";
 }
 

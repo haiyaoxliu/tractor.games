@@ -5,8 +5,8 @@ import ConvexClientProvider from '@/components/ConvexClientProvider'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Tractor Games',
-  description: 'Play the popular trick-taking card game Tractor',
+  title: 'tractor.games — Trick-Taking Card Games',
+  description: 'Play Tractor, Gong Zhu, Wizard, and Skull King online with friends',
 }
 
 export default function RootLayout({
