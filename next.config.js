@@ -11,6 +11,8 @@ function fromGit() {
   try {
     if (git('rev-parse --is-shallow-repository') === 'true') {
       try { git('fetch --unshallow --tags') } catch {}
+      // A shallow count would be wrong (Vercel clones ~10 commits); let the API path run.
+      if (git('rev-parse --is-shallow-repository') === 'true') return null
     }
     const n = parseInt(git('rev-list --first-parent --count HEAD'), 10)
     if (!Number.isFinite(n)) return null
@@ -32,8 +34,10 @@ async function fromGitHub() {
   try {
     const res = await fetch(`https://api.github.com/repos/${REPO}/commits?sha=${sha}&per_page=1`)
     const last = /[?&]page=(\d+)>; rel="last"/.exec(res.headers.get('link') || '')
+    if (!last) console.warn(`build number: GitHub API returned ${res.status} with no page count`)
     return last ? { n: last[1], name: '' } : null
-  } catch {
+  } catch (e) {
+    console.warn('build number: GitHub API failed', e)
     return null
   }
 }
