@@ -42,17 +42,19 @@ Convex is deployed only by Vercel's build on merge, never by hand.
 
 ### Rule tests (one file per logic module, small)
 
-4. **Wizard rules.** `convex/bidGameLogic.ts`: follow-suit validation;
+4. **Wizard rules.** Done (#7). `convex/bidGameLogic.ts`: follow-suit validation;
    trick winner (first wizard, all jesters, trump over led suit, no
    trump); scoring (20 + 10/trick, −10 per trick off).
-5. **Skull King rules.** Same file: the mermaid > Skull King > pirate >
+5. **Skull King rules.** Done (#6). Same file: the mermaid > Skull King > pirate >
    mermaid triangle, escapes, black as trump; bonuses; scoring, including
    the zero bid (±10 × round). Rules edition: see Answers.
-6. **Hearts rules.** `convex/heartsGameLogic.ts`: two of clubs leads,
+6. **Hearts rules.** Done (#8). `convex/heartsGameLogic.ts`: two of clubs leads,
    follow suit, trick winner, round scoring.
-7. **Tractor rules.** `convex/gameLogic.ts`: trump and effective suit,
+7. **Tractor rules.** Done (#10). `convex/gameLogic.ts`: trump and effective suit,
    pairs and tractors, trick winner, follow rules, kitty bonus, rank
-   change.
+   change. #11 fixes the clear bugs the tests found: tractor order
+   (K-K-A-A, 2-2-3-3, trump A-A into the trump-rank pair), the kitty
+   multiplier by the last trick's shape, and `playStrength`'s length check.
 
 ### Play-throughs (four browser tabs against the dev deployment)
 
@@ -86,3 +88,11 @@ same PR or one per bug.
 - Skull King: current rules (+40 / +20); task 5 (PR #6) implements and
   tests it.
 - The player-name limit is back to 6 letters (this PR).
+
+Open game-design questions for the user (tests for these are `it.skip`):
+
+- Gong Zhu: is the pig Q♦ or Q♠? How does 4♥ score? Do 全红, 亮牌
+  and the 2♣ lead apply?
+- Tractor: do 5H + 5D (different off-suit trump-rank cards) count as a
+  pair, or only identical cards? When attackers score 0, do defenders go
+  up +2 or +3?
