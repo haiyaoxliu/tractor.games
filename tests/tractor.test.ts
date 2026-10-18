@@ -11,6 +11,7 @@ import {
   isTractor,
   isTrumpCard,
   kittyBonus,
+  kittyMultiplier,
   pointValue,
   shuffle,
   totalPoints,
@@ -96,14 +97,12 @@ describe("getPlayType / isTractor", () => {
     expect(isTractor(["4H", "4H", "6H", "6H"], S, R)).toBe(true);
   });
 
-  // Skipped (looks wrong, game-mechanics work tabled): getSuitStrengthOrder lists A before 2 and leaves 2 out of plain suits.
-  it.skip("KK-AA and 22-33 are tractors", () => {
+  it("KK-AA and 22-33 are tractors", () => {
     expect(isTractor(["KH", "KH", "AH", "AH"], S, R)).toBe(true);
     expect(isTractor(["2H", "2H", "3H", "3H"], S, R)).toBe(true);
   });
 
-  // Skipped (same cause): trump A is first in getSuitStrengthOrder, so it never chains into the trump-rank pairs.
-  it.skip("trump A pair + off-suit trump-rank pair + in-suit trump-rank pair is a tractor", () => {
+  it("trump A pair + off-suit trump-rank pair + in-suit trump-rank pair is a tractor", () => {
     expect(isTractor(["AS", "AS", "5H", "5H", "5S", "5S"], S, R)).toBe(true);
   });
 
@@ -156,6 +155,14 @@ describe("determineTrickWinner", () => {
     ];
     expect(determineTrickWinner(plays, S, R)).toBe(2);
   });
+
+  it("on a tractor lead, a longer trump tractor does not win", () => {
+    const plays = [
+      { seat: 0, cards: ["8H", "8H", "9H", "9H"] },
+      { seat: 1, cards: ["3S", "3S", "4S", "4S", "6S", "6S"] },
+    ];
+    expect(determineTrickWinner(plays, S, R)).toBe(0);
+  });
 });
 
 describe("validatePlay", () => {
@@ -201,13 +208,20 @@ describe("scoring", () => {
   });
 
   it("attackers win at 80 points or more", () => {
-    expect(determineWinner(75, 1)).toBe("defenders");
-    expect(determineWinner(80, 1)).toBe("attackers");
+    expect(determineWinner(75)).toBe("defenders");
+    expect(determineWinner(80)).toBe("attackers");
   });
 
   it("kitty points are doubled for attackers who win the last trick, else 0", () => {
     const kitty = ["5H", "KD", "3C"]; // 15 points
     expect(kittyBonus(kitty, 1, 0)).toBe(30); // seat 1 is an attacker vs declarer 0
     expect(kittyBonus(kitty, 2, 0)).toBe(0); // seat 2 is declarer's partner
+    expect(kittyBonus(kitty, 1, 0, 4)).toBe(60);
+  });
+
+  it("kitty multiplier follows the last lead: ×2 single, ×4 pair, ×2 per card for a tractor", () => {
+    expect(kittyMultiplier(["AH"], S, R)).toBe(2);
+    expect(kittyMultiplier(["AH", "AH"], S, R)).toBe(4);
+    expect(kittyMultiplier(["8H", "8H", "9H", "9H"], S, R)).toBe(8);
   });
 });
