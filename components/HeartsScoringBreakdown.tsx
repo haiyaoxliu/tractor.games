@@ -37,10 +37,10 @@ export default function HeartsScoringBreakdown({
           <div
             key={seat}
             style={{
-              background: "#f8f9fa",
+              background: "var(--legacy-strip-bg)",
               borderRadius: 8,
               padding: "0.75rem",
-              border: "1px solid #ddd",
+              border: "1px solid var(--legacy-gray-ddd)",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
@@ -49,7 +49,7 @@ export default function HeartsScoringBreakdown({
                 style={{
                   fontWeight: 700,
                   fontSize: "1.1rem",
-                  color: score > 0 ? "#dc3545" : score < 0 ? "#28a745" : "#666",
+                  color: score > 0 ? "var(--legacy-bad)" : score < 0 ? "var(--legacy-good)" : "var(--legacy-gray-666)",
                 }}
               >
                 {score > 0 ? `+${score}` : score}
@@ -70,8 +70,8 @@ export default function HeartsScoringBreakdown({
                               top: -4,
                               right: -2,
                               fontSize: "0.6rem",
-                              background: card === "JD" ? "#28a745" : card === "QD" ? "#dc3545" : "#e67e22",
-                              color: "#fff",
+                              background: card === "JD" ? "var(--legacy-good)" : card === "QD" ? "var(--legacy-bad)" : "var(--legacy-orange)",
+                              color: "var(--on-color)",
                               borderRadius: 4,
                               padding: "0 3px",
                               fontWeight: 700,
@@ -85,13 +85,13 @@ export default function HeartsScoringBreakdown({
                   })}
                 </div>
                 {tcNote && (
-                  <div style={{ fontSize: "0.75rem", color: "#e67e22", fontStyle: "italic", marginTop: 4 }}>
+                  <div style={{ fontSize: "0.75rem", color: "var(--legacy-orange)", fontStyle: "italic", marginTop: 4 }}>
                     {tcNote}
                   </div>
                 )}
               </div>
             ) : (
-              <div style={{ fontSize: "0.8rem", color: "#999" }}>No scoring cards</div>
+              <div style={{ fontSize: "0.8rem", color: "var(--legacy-gray-999)" }}>No scoring cards</div>
             )}
           </div>
         );

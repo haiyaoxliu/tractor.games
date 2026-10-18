@@ -8,10 +8,10 @@ const SUIT_SYMBOLS: Record<string, string> = {
 };
 
 const SUIT_COLORS: Record<string, string> = {
-  S: "#000",
-  H: "#e00",
-  D: "#e00",
-  C: "#000",
+  S: "var(--suit-black)",
+  H: "var(--suit-red)",
+  D: "var(--suit-red)",
+  C: "var(--suit-black)",
 };
 
 const RANK_DISPLAY: Record<string, string> = {
@@ -39,10 +39,10 @@ const SK_SUIT_GLYPHS: Record<string, string> = {
 };
 
 const SK_SUIT_COLORS: Record<string, string> = {
-  G: "#15803d",
-  Y: "#b45309",
-  P: "#7c3aed",
-  B: "#18181b",
+  G: "var(--sk-parrot)",
+  Y: "var(--sk-chest)",
+  P: "var(--sk-map)",
+  B: "var(--sk-jolly-roger)",
 };
 
 export const SK_SUIT_NAMES: Record<string, string> = {
@@ -63,16 +63,16 @@ export interface CardParts {
 
 export function cardParts(card: string): CardParts {
   // Tractor jokers
-  if (card === "JK") return { corner: "★", center: "🃏", color: "#b45309", label: "Big Joker" };
-  if (card === "jk") return { corner: "☆", center: "🃏", color: "#52525b", label: "Joker" };
+  if (card === "JK") return { corner: "★", center: "🃏", color: "var(--card-big-joker)", label: "Big Joker" };
+  if (card === "jk") return { corner: "☆", center: "🃏", color: "var(--card-joker)", label: "Joker" };
   // Wizard specials
-  if (card.startsWith("WZ")) return { corner: "W", center: "🧙", color: "#7c3aed", label: "Wizard" };
-  if (card.startsWith("JE")) return { corner: "J", center: "🎭", color: "#52525b", label: "Jester" };
+  if (card.startsWith("WZ")) return { corner: "W", center: "🧙", color: "var(--card-wizard)", label: "Wizard" };
+  if (card.startsWith("JE")) return { corner: "J", center: "🎭", color: "var(--card-jester)", label: "Jester" };
   // Skull King specials
-  if (card === "SK") return { corner: "SK", center: "💀", color: "#18181b", label: "Skull King" };
-  if (card.startsWith("MM")) return { corner: "M", center: "🧜", color: "#0d9488", label: "Mermaid" };
-  if (card.startsWith("PR")) return { corner: "P", center: "🏴‍☠️", color: "#18181b", label: "Pirate" };
-  if (card.startsWith("ES")) return { corner: "E", center: "🏳️", color: "#71717a", label: "Escape" };
+  if (card === "SK") return { corner: "SK", center: "💀", color: "var(--card-skull-king)", label: "Skull King" };
+  if (card.startsWith("MM")) return { corner: "M", center: "🧜", color: "var(--card-mermaid)", label: "Mermaid" };
+  if (card.startsWith("PR")) return { corner: "P", center: "🏴‍☠️", color: "var(--card-pirate)", label: "Pirate" };
+  if (card.startsWith("ES")) return { corner: "E", center: "🏳️", color: "var(--card-escape)", label: "Escape" };
   // Skull King suited: "01G".."14B"
   if (/^\d\d[GYPB]$/.test(card)) {
     const suit = card[2];
@@ -89,7 +89,7 @@ export function cardParts(card: string): CardParts {
     corner: RANK_DISPLAY[rank] ?? rank,
     cornerSuit: SUIT_SYMBOLS[suit],
     center: SUIT_SYMBOLS[suit] ?? suit,
-    color: SUIT_COLORS[suit] ?? "#000",
+    color: SUIT_COLORS[suit] ?? "var(--suit-black)",
   };
 }
 
@@ -110,7 +110,7 @@ export function suitSymbol(suit: string): string {
 }
 
 export function suitColor(suit: string): string {
-  return SUIT_COLORS[suit] ?? "#000";
+  return SUIT_COLORS[suit] ?? "var(--suit-black)";
 }
 
 export function getSessionId(): string {

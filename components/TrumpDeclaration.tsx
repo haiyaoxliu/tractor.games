@@ -1,10 +1,10 @@
 "use client";
 
 const SUITS: { suit: string; label: string; color: string }[] = [
-  { suit: "S", label: "♠ Spades", color: "#000" },
-  { suit: "H", label: "♥ Hearts", color: "#e00" },
-  { suit: "D", label: "♦ Diamonds", color: "#e00" },
-  { suit: "C", label: "♣ Clubs", color: "#000" },
+  { suit: "S", label: "♠ Spades", color: "var(--suit-black)" },
+  { suit: "H", label: "♥ Hearts", color: "var(--suit-red)" },
+  { suit: "D", label: "♦ Diamonds", color: "var(--suit-red)" },
+  { suit: "C", label: "♣ Clubs", color: "var(--suit-black)" },
 ];
 
 const SUIT_SYMBOLS: Record<string, string> = {
@@ -71,9 +71,9 @@ export default function TrumpDeclaration({
       style={{
         textAlign: "center",
         padding: "1.5rem",
-        background: "#fff3cd",
+        background: "var(--highlight-bg)",
         borderRadius: 8,
-        border: "2px solid #ffc107",
+        border: "2px solid var(--highlight-line)",
         margin: "1rem 0",
       }}
     >
@@ -85,7 +85,7 @@ export default function TrumpDeclaration({
       {currentDeclaration && (
         <div
           style={{
-            background: "#e8f5e9",
+            background: "var(--declared-bg)",
             padding: "0.5rem 1rem",
             borderRadius: 6,
             marginBottom: "1rem",
@@ -100,14 +100,14 @@ export default function TrumpDeclaration({
             ({STRENGTH_LABELS[currentDeclaration.strength]})
           </strong>
           {anyCanDeclare && (
-            <span style={{ color: "#e67e22", fontWeight: 600, marginLeft: "0.5rem" }}>
+            <span style={{ color: "var(--legacy-orange)", fontWeight: 600, marginLeft: "0.5rem" }}>
               — Override possible!
             </span>
           )}
         </div>
       )}
 
-      <p style={{ color: "#666", fontSize: "0.85rem", marginBottom: "1rem" }}>
+      <p style={{ color: "var(--legacy-gray-666)", fontSize: "0.85rem", marginBottom: "1rem" }}>
         Declare with a single or pair of {trumpRank}s, or a joker pair.
         {currentStrength > 0 && " Higher strength overrides current declaration."}
       </p>
@@ -123,7 +123,7 @@ export default function TrumpDeclaration({
                   padding: "6px 12px",
                   fontSize: "0.85rem",
                   fontWeight: 600,
-                  color: "#fff",
+                  color: "var(--on-color)",
                   background: s.color,
                   border: "none",
                   borderRadius: 6,
@@ -141,7 +141,7 @@ export default function TrumpDeclaration({
                   padding: "8px 16px",
                   fontSize: "1rem",
                   fontWeight: 600,
-                  color: "#fff",
+                  color: "var(--on-color)",
                   background: s.color,
                   border: "none",
                   borderRadius: 6,
@@ -164,8 +164,8 @@ export default function TrumpDeclaration({
               padding: "8px 16px",
               fontSize: "1rem",
               fontWeight: 600,
-              color: "#fff",
-              background: "#6c757d",
+              color: "var(--on-color)",
+              background: "var(--legacy-muted)",
               border: "none",
               borderRadius: 6,
               cursor: "pointer",
@@ -181,8 +181,8 @@ export default function TrumpDeclaration({
               padding: "8px 16px",
               fontSize: "1rem",
               fontWeight: 600,
-              color: "#fff",
-              background: "#343a40",
+              color: "var(--on-color)",
+              background: "var(--legacy-dark)",
               border: "none",
               borderRadius: 6,
               cursor: "pointer",
@@ -201,8 +201,8 @@ export default function TrumpDeclaration({
             padding: "8px 20px",
             fontSize: "0.95rem",
             fontWeight: 600,
-            color: "#fff",
-            background: dealComplete ? "#28a745" : "#a5d6a7",
+            color: "var(--on-color)",
+            background: dealComplete ? "var(--legacy-good)" : "var(--legacy-good-soft)",
             border: "none",
             borderRadius: 6,
             cursor: dealComplete ? "pointer" : "not-allowed",

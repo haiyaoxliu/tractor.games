@@ -1,0 +1,160 @@
+/* Design tokens for tractor.games.
+ *
+ * Every colour the app uses, plus its type, card sizes, radii, shadows and
+ * the spacing in the shared stylesheets, lives here. (Spacing written inline
+ * in components is not tokenised yet.) Edit them live at /playground (dev
+ * only), which writes changes back to this file.
+ *
+ * Format the playground relies on: one `--name: value;` per line, grouped
+ * under "@group Name" comments.
+ */
+
+:root {
+  /* @group Surfaces & ink */
+  --bg: #fafafa;
+  --panel: #ffffff;
+  --panel-soft: #f6f6f7;
+  --panel-tint: #eef2ff;
+  --line: #e4e4e7;
+  --line-strong: #d4d4d8;
+  --ink: #18181b;
+  --ink-soft: #52525b;
+  --ink-faint: #a1a1aa;
+  --table: var(--panel-soft);
+
+  /* @group Accent & signal */
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: #c7d2fe;
+  --on-accent: #fff;
+  --on-color: #fff;
+  --red: #dc2626;
+  --green: #15803d;
+  --gold: #b45309;
+
+  /* @group Legacy colours (inline styles, pre-palette) */
+  --legacy-good: #28a745;
+  --legacy-bad: #dc3545;
+  --legacy-muted: #6c757d;
+  --legacy-dark: #343a40;
+  --legacy-good-soft: #a5d6a7;
+  --legacy-orange: #e67e22;
+  --legacy-gray-333: #333;
+  --legacy-gray-555: #555;
+  --legacy-gray-666: #666;
+  --legacy-gray-999: #999;
+  --legacy-gray-ddd: #ddd;
+  --legacy-gray-eee: #eee;
+  --legacy-sheet-bg: #fff;
+  --legacy-strip-bg: #f8f9fa;
+  --legacy-input-line: #e0e0e0;
+  --legacy-input-disabled-bg: #f5f5f5;
+
+  /* @group Notices */
+  --error-bg: #f8d7da;
+  --error-ink: #721c24;
+  --error-soft-bg: #fef2f2;
+  --error-soft-ink: #991b1b;
+  --error-soft-line: #fecaca;
+  --error-lobby: #dc3545;
+  --success-bg: #d4edda;
+  --success-ink: #155724;
+  --info-bg: #e3f2fd;
+  --info-line: #42a5f5;
+  --waiting-bg: #fff8e1;
+  --waiting-line: #ffca28;
+  --waiting-ink: #f57f17;
+  --highlight-bg: #fff3cd;
+  --highlight-line: #ffc107;
+  --declared-bg: #e8f5e9;
+  --scoring-bg: #ecfdf5;
+  --match-win-bg: #fffbeb;
+  --match-win-ink: #d4a017;
+
+  /* @group Suits & card faces */
+  --card-face: #fff;
+  --suit-black: #000;
+  --suit-red: #e00;
+  --card-big-joker: #b45309;
+  --card-joker: #52525b;
+  --card-wizard: #7c3aed;
+  --card-jester: #52525b;
+  --card-skull-king: #18181b;
+  --card-mermaid: #0d9488;
+  --card-pirate: #18181b;
+  --card-escape: #71717a;
+  --sk-parrot: #15803d;
+  --sk-chest: #b45309;
+  --sk-map: #7c3aed;
+  --sk-jolly-roger: #18181b;
+  --title-suit-black: #18181b;
+  --title-suit-red: #dc2626;
+
+  /* @group Card back */
+  --card-back-a: #eef2ff;
+  --card-back-b: #e0e7ff;
+  --card-back-stripe: 4px;
+  --card-back-line: var(--accent-soft);
+  --card-back-glyph: var(--accent);
+  --card-back-glyph-opacity: 0.55;
+
+  /* @group Card size */
+  --card-w: 56px;
+  --card-h: 78px;
+  --card-radius: 8px;
+  --card-margin: 3px 2px;
+  --card-corner-size: 0.8rem;
+  --card-center-size: 1.5rem;
+  --card-label-size: 0.55rem;
+  --card-small-w: 42px;
+  --card-small-h: 60px;
+  --card-small-radius: 6px;
+  --card-small-margin: 2px 1px;
+  --card-small-corner-size: 0.65rem;
+  --card-small-center-size: 1.1rem;
+
+  /* @group Hand & card motion */
+  --hand-overlap: -14px;
+  --hand-overlap-phone: -20px;
+  --card-lift-hover: -8px;
+  --card-lift-selected: -12px;
+  --motion-fast: 0.15s;
+  --motion: 0.2s;
+
+  /* @group Type */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --text-title: 2.4rem;
+  --text-title-phone: 2rem;
+  --text-title-suits: 1.6rem;
+  --text-subtitle: 1.05rem;
+  --text-subtitle-phone: 1rem;
+  --text-btn: 1rem;
+  --text-btn-small: 0.85rem;
+  --text-input: 1.2rem;
+
+  /* @group Spacing & radius */
+  --page-pad: 2rem;
+  --container-pad: 3rem;
+  --container-pad-phone: 2rem 1.5rem;
+  --container-max: 640px;
+  --btn-pad: 10px 24px;
+  --btn-small-pad: 6px 14px;
+  --radius-container: 16px;
+  --radius-panel: 14px;
+  --radius-tile: 12px;
+  --radius-btn: 10px;
+  --radius-btn-small: 8px;
+  --radius-input: 8px;
+
+  /* @group Shadows */
+  --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+  --shadow-container: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.06);
+  --shadow-btn-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-btn-primary-hover: 0 6px 16px rgba(79, 70, 229, 0.3);
+  --shadow-lobby-btn-hover: 0 8px 18px rgba(79, 70, 229, 0.3);
+  --shadow-tile-hover: 0 6px 16px rgba(79, 70, 229, 0.12);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 10px 20px rgba(0, 0, 0, 0.15);
+  --shadow-card-selected: 0 0 0 2px var(--accent-soft), 0 12px 22px rgba(79, 70, 229, 0.25);
+}

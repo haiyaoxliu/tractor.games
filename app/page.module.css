@@ -4,46 +4,52 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: var(--page-pad);
 }
 
 .container {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 3rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.06);
-  max-width: 640px;
+  border-radius: var(--radius-container);
+  padding: var(--container-pad);
+  box-shadow: var(--shadow-container);
+  max-width: var(--container-max);
   width: 100%;
   text-align: center;
 }
 
 .title {
-  font-size: 2.4rem;
+  font-size: var(--text-title);
   font-weight: 700;
   color: var(--ink);
   margin-bottom: 0.5rem;
 }
 
 .titleSuits {
-  font-size: 1.6rem;
+  font-size: var(--text-title-suits);
   letter-spacing: 0.1em;
   vertical-align: middle;
-  background: linear-gradient(90deg, #18181b 25%, #dc2626 25%, #dc2626 75%, #18181b 75%);
+  background: linear-gradient(
+    90deg,
+    var(--title-suit-black) 25%,
+    var(--title-suit-red) 25%,
+    var(--title-suit-red) 75%,
+    var(--title-suit-black) 75%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .subtitle {
-  font-size: 1.05rem;
+  font-size: var(--text-subtitle);
   color: var(--ink-soft);
   margin-bottom: 2rem;
 }
 
 .success {
-  background: #d4edda;
-  color: #155724;
+  background: var(--success-bg);
+  color: var(--success-ink);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
@@ -65,10 +71,10 @@
 .input {
   width: 100%;
   padding: 1rem 4rem 1rem 1rem;
-  font-size: 1.2rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  transition: border-color 0.2s;
+  font-size: var(--text-input);
+  border: 2px solid var(--legacy-input-line);
+  border-radius: var(--radius-input);
+  transition: border-color var(--motion);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 600;
@@ -80,7 +86,7 @@
 }
 
 .input:disabled {
-  background-color: #f5f5f5;
+  background-color: var(--legacy-input-disabled-bg);
   cursor: not-allowed;
 }
 
@@ -88,12 +94,12 @@
   position: absolute;
   right: 1rem;
   font-size: 0.875rem;
-  color: #999;
+  color: var(--legacy-gray-999);
   font-weight: 500;
 }
 
 .error {
-  color: #dc3545;
+  color: var(--error-lobby);
   font-size: 0.875rem;
   text-align: left;
   margin-top: -0.5rem;
@@ -103,18 +109,18 @@
   padding: 0.8rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
-  color: white;
+  color: var(--on-accent);
   background: var(--accent);
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-btn);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  transition: transform var(--motion), box-shadow var(--motion), background var(--motion);
 }
 
 .button:hover:not(:disabled) {
   transform: translateY(-2px);
-  background: #4338ca;
-  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.3);
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-lobby-btn-hover);
 }
 
 .button:active:not(:disabled) {
@@ -130,7 +136,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: #999;
+  color: var(--legacy-gray-999);
   font-size: 0.9rem;
   margin: 0.5rem 0;
 }
@@ -139,7 +145,7 @@
 .divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--legacy-gray-ddd);
 }
 
 .joinForm {
@@ -157,17 +163,17 @@
 .gameTile {
   background: var(--panel-soft);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-tile);
   padding: 1.25rem;
   text-align: center;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  transition: border-color var(--motion), box-shadow var(--motion), transform var(--motion);
 }
 
 .gameTile:hover {
   border-color: var(--accent-soft);
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.12);
+  box-shadow: var(--shadow-tile-hover);
   transform: translateY(-2px);
 }
 
@@ -198,14 +204,14 @@
     grid-template-columns: 1fr;
   }
   .container {
-    padding: 2rem 1.5rem;
+    padding: var(--container-pad-phone);
   }
 
   .title {
-    font-size: 2rem;
+    font-size: var(--text-title-phone);
   }
 
   .subtitle {
-    font-size: 1rem;
+    font-size: var(--text-subtitle-phone);
   }
 }
