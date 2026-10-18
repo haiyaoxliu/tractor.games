@@ -18,7 +18,7 @@ export default function Home() {
   const joinRoom = useMutation(api.rooms.joinRoom)
 
   useEffect(() => {
-    const existing = getPlayerName()?.slice(0, 3)
+    const existing = getPlayerName()?.slice(0, 6)
     if (existing) {
       // localStorage is unavailable during SSR, so the saved name can only be
       // applied after hydration
@@ -113,18 +113,18 @@ export default function Home() {
               type="text"
               value={name}
               onChange={(e) => {
-                if (e.target.value.length <= 3) {
+                if (e.target.value.length <= 6) {
                   setName(e.target.value)
                   setError(null)
                 }
               }}
-              placeholder="Your name (max 3)"
+              placeholder="Your name (max 6)"
               className={styles.input}
-              maxLength={3}
+              maxLength={6}
               disabled={isLoading}
               autoFocus
             />
-            <span className={styles.charCount}>{name.length}/3</span>
+            <span className={styles.charCount}>{name.length}/6</span>
           </div>
 
           {error && <div className={styles.error}>{error}</div>}

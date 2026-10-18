@@ -17,7 +17,7 @@ Convex is deployed only by Vercel's build on merge, never by hand.
 
 - The React 19 / Next 16.2 / convex 1.42 / eslint 9 upgrade is on main
   (0163d1b) and in production. `npm ci`, `tsc`, `eslint .` and
-  `next build` all pass. It also cut the player-name limit from 6 to 3.
+  `next build` all pass.
 - No tests, no CI workflow, no Node version pinned.
 - Wizard and Skull King landed in one commit (b9900aa, 07-09) and have
   not been played through.
@@ -30,11 +30,11 @@ Convex is deployed only by Vercel's build on merge, never by hand.
 
 ### Foundation
 
-1. **CI.** A GitHub Actions workflow on pull requests and main: Node 22,
+1. **CI.** Done (#3). A GitHub Actions workflow on pull requests and main: Node 22,
    `npm ci`, `tsc --noEmit` (app and `convex/`), `npm run lint`,
    `next build` with a placeholder `NEXT_PUBLIC_CONVEX_URL`. It never runs
    `convex deploy`. Add `engines.node` to package.json.
-2. **Test runner.** Add Vitest and `npm test`, with one smoke test (deck
+2. **Test runner.** Done (#4). Add Vitest and `npm test`, with one smoke test (deck
    sizes: Tractor 108, Hearts 52, Wizard 60, Skull King 69). CI runs it.
 3. **Build number in the footer.** Show `b<n>` (and its name, if tagged)
    on every page, per ADR 29. On Vercel the clone is shallow, so the build
@@ -47,8 +47,7 @@ Convex is deployed only by Vercel's build on merge, never by hand.
    trump); scoring (20 + 10/trick, −10 per trick off).
 5. **Skull King rules.** Same file: the mermaid > Skull King > pirate >
    mermaid triangle, escapes, black as trump; bonuses; scoring, including
-   the zero bid (±10 × round). Settle the rules edition first (see
-   Questions).
+   the zero bid (±10 × round). Rules edition: see Answers.
 6. **Hearts rules.** `convex/heartsGameLogic.ts`: two of clubs leads,
    follow suit, trick winner, round scoring.
 7. **Tractor rules.** `convex/gameLogic.ts`: trump and effective suit,
@@ -82,9 +81,8 @@ same PR or one per bug.
 - 3, 5 and 6 player Wizard and Skull King play-throughs.
 - The newer Skull King cards (Kraken, White Whale, Tigress, Loot).
 
-## Questions
+## Answers
 
-- Skull King edition: the code pays +50 for a mermaid taking the Skull
-  King and nothing for a pirate taking a mermaid. The current rules pay
-  +40 and +20. Which one?
-- The player-name limit went from 6 to 3 letters in the upgrade. Meant?
+- Skull King: current rules (+40 / +20); task 5 (PR #6) implements and
+  tests it.
+- The player-name limit is back to 6 letters (this PR).
