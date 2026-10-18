@@ -20,6 +20,10 @@ export default function RootLayout({
         <ConvexClientProvider>
           {children}
         </ConvexClientProvider>
+        <footer className="build-footer">
+          {process.env.NEXT_PUBLIC_BUILD === 'dev' ? 'dev' : `b${process.env.NEXT_PUBLIC_BUILD}`}
+          {process.env.NEXT_PUBLIC_BUILD_NAME ? ` · ${process.env.NEXT_PUBLIC_BUILD_NAME}` : ''}
+        </footer>
       </body>
     </html>
   )

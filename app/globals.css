@@ -223,3 +223,10 @@ a {
     margin-left: -20px;
   }
 }
+
+.build-footer {
+  padding: 16px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
