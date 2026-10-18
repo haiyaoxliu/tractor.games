@@ -509,13 +509,14 @@ export function roundDefenders(
  */
 export function nextKittySeat(kittySeat: number, defenseSwitches: boolean): number {
   if (!defenseSwitches) return (kittySeat + 2) % 4;
-  return (kittySeat + 1) % 4; // assumed: next seat in turn order; confirm with user
+  return (kittySeat + 1) % 4; // next seat in turn order (user, 2026-10-18)
 }
 
 // ─── Scoring ─────────────────────────────────────────────────────────────────
 
 /** Calculate rank change from attacker points (4-player, 40-point brackets) */
 export function calculateRankChange(attackerPoints: number): { attackerChange: number; defenderChange: number } {
+  if (attackerPoints <= 0) return { attackerChange: 0, defenderChange: 3 };
   if (attackerPoints < 40) return { attackerChange: 0, defenderChange: 2 };
   if (attackerPoints < 80) return { attackerChange: 0, defenderChange: 1 };
   if (attackerPoints < 120) return { attackerChange: 0, defenderChange: 0 };
