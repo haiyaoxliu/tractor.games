@@ -2,13 +2,17 @@
   "name": "tractor.games",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "npx convex dev & next dev",
     "dev:backend": "npx convex dev",
     "dev:frontend": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p convex"
   },
   "dependencies": {
     "convex": "^1.42.1",
