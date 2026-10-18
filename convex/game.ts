@@ -10,6 +10,7 @@ import {
   kittyBonus,
   getPlayType,
   calculateRankChange,
+  roundDefenders,
   PROGRESSION_RANKS,
 } from "./gameLogic";
 
@@ -34,15 +35,14 @@ export const createTestGame = mutation({
 
     const roomCode = "TEST" + Math.random().toString(36).slice(2, 6).toUpperCase();
     const teamRanks = [0, 0]; // both teams start at "2"
-    const defendingTeamIndex = 0;
-    const trumpRank = getTrumpRankFromRoom(teamRanks, defendingTeamIndex);
+    const trumpRank = getTrumpRankFromRoom(teamRanks, 0);
 
+    // defendingTeamIndex stays unset until round 1's declaring fixes it
     const roomId = await ctx.db.insert("rooms", {
       roomCode,
       players,
       status: "playing",
       teamRanks,
-      defendingTeamIndex,
     });
 
     const deck = shuffle(createDoubleDeck());
@@ -79,9 +79,9 @@ export const startGame = mutation({
     if (room.status !== "waiting") throw new Error("Game already started");
 
     // Initialize team ranks if not set
+    // Round 1: both teams play the starting rank, and declaring decides who defends
     const teamRanks = room.teamRanks ?? [0, 0];
-    const defendingTeamIndex = room.defendingTeamIndex ?? 0;
-    const trumpRank = getTrumpRankFromRoom(teamRanks, defendingTeamIndex);
+    const trumpRank = getTrumpRankFromRoom(teamRanks, 0);
 
     const deck = shuffle(createDoubleDeck());
     const { hands, kitty } = deal(deck);
@@ -106,7 +106,7 @@ export const startGame = mutation({
       status: "playing",
       gameId,
       teamRanks,
-      defendingTeamIndex,
+      defendingTeamIndex: undefined,
     });
 
     return gameId;
@@ -214,10 +214,8 @@ export const declareTrump = mutation({
 
     const isJokerDeclaration = type === "smallJokerPair" || type === "bigJokerPair";
 
-    // Declarer's team defends
-    const declarerSeat = player.seat;
-    const partnerSeat = (declarerSeat + 2) % 4;
-    const defendingTeam = [declarerSeat, partnerSeat];
+    // Round 1: declarer's team defends. Later rounds: defenders carry over; declaring picks trump only
+    const { seats: defendingTeam, kittySeat: declarerSeat } = roundDefenders(room.defendingTeamIndex, player.seat);
 
     // Give kitty to declarer
     const newHands = game.hands.map((h) => [...h]);
@@ -252,37 +250,29 @@ export const finalizeTrump = mutation({
     if (!room) throw new Error("Room not found");
 
     const declarations = game.declarations ?? [];
+    const lastDeclaration = declarations.length > 0 ? declarations[declarations.length - 1] : undefined;
 
-    if (declarations.length === 0) {
-      // No one declared — fallback to no trump suit
-      // Defending team's first seat gets the kitty
-      const defendingTeamIndex = room.defendingTeamIndex ?? 0;
-      const declarerSeat = defendingTeamIndex === 0 ? 0 : 1;
-      const partnerSeat = (declarerSeat + 2) % 4;
-      const defendingTeam = [declarerSeat, partnerSeat];
-
-      const newHands = game.hands.map((h) => [...h]);
-      newHands[declarerSeat] = [...newHands[declarerSeat], ...game.kitty];
-
-      await ctx.db.patch(gameId, {
-        phase: "kitty",
-        hands: newHands,
-        declarerSeat,
-        defendingTeam,
-        noTrumpSuit: true,
-      });
-    } else {
-      const declarerSeat = game.declarerSeat!;
-
-      // Give kitty to declarer
-      const newHands = game.hands.map((h) => [...h]);
-      newHands[declarerSeat] = [...newHands[declarerSeat], ...game.kitty];
-
-      await ctx.db.patch(gameId, {
-        phase: "kitty",
-        hands: newHands,
-      });
+    // Defenders are fixed now; in round 1 this also records them on the room for nextRound
+    const { teamIndex, seats: defendingTeam, kittySeat: declarerSeat } = roundDefenders(
+      room.defendingTeamIndex,
+      lastDeclaration?.seat
+    );
+    if (room.defendingTeamIndex === undefined) {
+      await ctx.db.patch(room._id, { defendingTeamIndex: teamIndex });
     }
+
+    // Give kitty to the declarer (or the defending team's first seat)
+    const newHands = game.hands.map((h) => [...h]);
+    newHands[declarerSeat] = [...newHands[declarerSeat], ...game.kitty];
+
+    await ctx.db.patch(gameId, {
+      phase: "kitty",
+      hands: newHands,
+      declarerSeat,
+      defendingTeam,
+      // No one declared — fallback to no trump suit
+      ...(lastDeclaration ? {} : { noTrumpSuit: true }),
+    });
   },
 });
 

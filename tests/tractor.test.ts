@@ -11,6 +11,7 @@ import {
   isTractor,
   isTrumpCard,
   kittyBonus,
+  roundDefenders,
   pointValue,
   shuffle,
   totalPoints,
@@ -215,5 +216,20 @@ describe("scoring", () => {
     const kitty = ["5H", "KD", "3C"]; // 15 points
     expect(kittyBonus(kitty, 1, 0)).toBe(30); // seat 1 is an attacker vs declarer 0
     expect(kittyBonus(kitty, 2, 0)).toBe(0); // seat 2 is declarer's partner
+  });
+});
+
+describe("roundDefenders (庄 rule)", () => {
+  it("round 1: the declarer's team defends and takes the kitty", () => {
+    expect(roundDefenders(undefined, 1)).toEqual({ teamIndex: 1, seats: [1, 3], kittySeat: 1 });
+  });
+
+  it("round 1 with no declaration: team 0 defends", () => {
+    expect(roundDefenders(undefined, undefined)).toEqual({ teamIndex: 0, seats: [0, 2], kittySeat: 0 });
+  });
+
+  it("later rounds: the carried-over team defends whoever declares", () => {
+    expect(roundDefenders(0, 3)).toEqual({ teamIndex: 0, seats: [0, 2], kittySeat: 0 });
+    expect(roundDefenders(1, 3)).toEqual({ teamIndex: 1, seats: [1, 3], kittySeat: 3 });
   });
 });

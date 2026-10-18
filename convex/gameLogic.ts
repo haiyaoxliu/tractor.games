@@ -487,6 +487,24 @@ export function sortHand(hand: Card[], trumpSuit?: string, trumpRank?: string, n
   });
 }
 
+// ─── Defending Team ──────────────────────────────────────────────────────────
+
+/**
+ * Which team defends this round (the 庄 rule). Team 0 is seats 0 & 2, team 1 is seats 1 & 3.
+ * Round 1 (carriedTeamIndex undefined): the declarer's team, or team 0 if no one declared.
+ * Later rounds: the team carried over from the last result; declaring only picks trump.
+ * kittySeat takes the kitty: the declarer if they defend, else the defending team's first seat.
+ */
+export function roundDefenders(
+  carriedTeamIndex: number | undefined,
+  declarerSeat: number | undefined
+): { teamIndex: number; seats: number[]; kittySeat: number } {
+  const teamIndex = carriedTeamIndex ?? (declarerSeat !== undefined ? declarerSeat % 2 : 0);
+  const seats = [teamIndex, teamIndex + 2];
+  const kittySeat = declarerSeat !== undefined && seats.includes(declarerSeat) ? declarerSeat : teamIndex;
+  return { teamIndex, seats, kittySeat };
+}
+
 // ─── Scoring ─────────────────────────────────────────────────────────────────
 
 /** Calculate rank change from attacker points (4-player, 40-point brackets) */
