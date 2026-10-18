@@ -11,7 +11,6 @@ import {
   isTractor,
   isTrumpCard,
   kittyBonus,
-  kittyMultiplier,
   pointValue,
   shuffle,
   totalPoints,
@@ -216,12 +215,5 @@ describe("scoring", () => {
     const kitty = ["5H", "KD", "3C"]; // 15 points
     expect(kittyBonus(kitty, 1, 0)).toBe(30); // seat 1 is an attacker vs declarer 0
     expect(kittyBonus(kitty, 2, 0)).toBe(0); // seat 2 is declarer's partner
-    expect(kittyBonus(kitty, 1, 0, 4)).toBe(60);
-  });
-
-  it("kitty multiplier follows the last lead: ×2 single, ×4 pair, ×2 per card for a tractor", () => {
-    expect(kittyMultiplier(["AH"], S, R)).toBe(2);
-    expect(kittyMultiplier(["AH", "AH"], S, R)).toBe(4);
-    expect(kittyMultiplier(["8H", "8H", "9H", "9H"], S, R)).toBe(8);
   });
 });

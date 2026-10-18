@@ -504,21 +504,13 @@ export function determineWinner(attackerPoints: number): "attackers" | "defender
   return attackerPoints >= 80 ? "attackers" : "defenders";
 }
 
-/** Kitty multiplier from the last trick's lead shape: ×2 single, ×4 pair, ×2 per card for a tractor */
-export function kittyMultiplier(leadCards: Card[], trumpSuit: string | undefined, trumpRank: string, noTrumpSuit?: boolean): number {
-  const type = getPlayType(leadCards, trumpSuit, trumpRank, noTrumpSuit);
-  if (type === "pair") return 4;
-  if (type === "tractor") return 2 * leadCards.length;
-  return 2;
-}
-
 /** Calculate bonus points from kitty if attackers win last trick */
-export function kittyBonus(kittyDiscards: Card[], lastTrickWinner: number, declarerSeat: number, multiplier = 2): number {
+export function kittyBonus(kittyDiscards: Card[], lastTrickWinner: number, declarerSeat: number): number {
   const declarerTeam = [declarerSeat, (declarerSeat + 2) % 4];
   const isDefenderWin = declarerTeam.includes(lastTrickWinner);
-  // If attackers win last trick, kitty points are multiplied and added to attacker score
+  // If attackers win last trick, kitty points are doubled and added to attacker score
   if (!isDefenderWin) {
-    return totalPoints(kittyDiscards) * multiplier;
+    return totalPoints(kittyDiscards) * 2;
   }
   return 0;
 }
