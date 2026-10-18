@@ -11,6 +11,7 @@ import {
   isTractor,
   isTrumpCard,
   kittyBonus,
+  nextKittySeat,
   roundDefenders,
   pointValue,
   shuffle,
@@ -219,17 +220,23 @@ describe("scoring", () => {
   });
 });
 
-describe("roundDefenders (庄 rule)", () => {
-  it("round 1: the declarer's team defends and takes the kitty", () => {
+describe("kitty seat (庄家)", () => {
+  it("round 1: the final declarer holds the kitty and their team defends", () => {
     expect(roundDefenders(undefined, 1)).toEqual({ teamIndex: 1, seats: [1, 3], kittySeat: 1 });
   });
 
-  it("round 1 with no declaration: team 0 defends", () => {
+  it("round 1 with no declaration: seat 0 holds the kitty", () => {
     expect(roundDefenders(undefined, undefined)).toEqual({ teamIndex: 0, seats: [0, 2], kittySeat: 0 });
   });
 
-  it("later rounds: the carried-over team defends whoever declares", () => {
-    expect(roundDefenders(0, 3)).toEqual({ teamIndex: 0, seats: [0, 2], kittySeat: 0 });
-    expect(roundDefenders(1, 3)).toEqual({ teamIndex: 1, seats: [1, 3], kittySeat: 3 });
+  it("later rounds: the carried kitty seat holds it whoever declares", () => {
+    expect(roundDefenders(2, 3)).toEqual({ teamIndex: 0, seats: [0, 2], kittySeat: 2 });
+  });
+
+  it("defenders stay: the partner takes the kitty; defense switches: the next seat does", () => {
+    expect(nextKittySeat(1, false)).toBe(3);
+    expect(nextKittySeat(3, false)).toBe(1);
+    expect(nextKittySeat(1, true)).toBe(2);
+    expect(nextKittySeat(3, true)).toBe(0);
   });
 });

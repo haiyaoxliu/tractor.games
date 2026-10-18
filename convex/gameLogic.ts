@@ -490,19 +490,26 @@ export function sortHand(hand: Card[], trumpSuit?: string, trumpRank?: string, n
 // ─── Defending Team ──────────────────────────────────────────────────────────
 
 /**
- * Which team defends this round (the 庄 rule). Team 0 is seats 0 & 2, team 1 is seats 1 & 3.
- * Round 1 (carriedTeamIndex undefined): the declarer's team, or team 0 if no one declared.
- * Later rounds: the team carried over from the last result; declaring only picks trump.
- * kittySeat takes the kitty: the declarer if they defend, else the defending team's first seat.
+ * Who holds the kitty (庄家) and which team defends this round. Team 0 is seats 0 & 2, team 1 is seats 1 & 3.
+ * Round 1 (carriedKittySeat undefined): the final declarer, or seat 0 if no one declared.
+ * Later rounds: the kitty seat carried over from the last result; declaring only picks trump.
  */
 export function roundDefenders(
-  carriedTeamIndex: number | undefined,
+  carriedKittySeat: number | undefined,
   declarerSeat: number | undefined
 ): { teamIndex: number; seats: number[]; kittySeat: number } {
-  const teamIndex = carriedTeamIndex ?? (declarerSeat !== undefined ? declarerSeat % 2 : 0);
-  const seats = [teamIndex, teamIndex + 2];
-  const kittySeat = declarerSeat !== undefined && seats.includes(declarerSeat) ? declarerSeat : teamIndex;
-  return { teamIndex, seats, kittySeat };
+  const kittySeat = carriedKittySeat ?? declarerSeat ?? 0;
+  const teamIndex = kittySeat % 2;
+  return { teamIndex, seats: [teamIndex, teamIndex + 2], kittySeat };
+}
+
+/**
+ * Next round's kitty seat. Defenders stay (attackers under 80): the partner takes it.
+ * Defense switches: the next seat in turn order, which is on the new defending team.
+ */
+export function nextKittySeat(kittySeat: number, defenseSwitches: boolean): number {
+  if (!defenseSwitches) return (kittySeat + 2) % 4;
+  return (kittySeat + 1) % 4; // assumed: next seat in turn order; confirm with user
 }
 
 // ─── Scoring ─────────────────────────────────────────────────────────────────

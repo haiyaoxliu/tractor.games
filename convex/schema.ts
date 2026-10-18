@@ -27,6 +27,7 @@ export default defineSchema({
     gameId: v.optional(v.id("games")),
     teamRanks: v.optional(v.array(v.number())), // [team0&2 rank index, team1&3 rank index] into RANKS
     defendingTeamIndex: v.optional(v.number()), // 0 or 1 — which team is defending
+    kittySeat: v.optional(v.number()), // seat holding the kitty (庄家); unset until round 1's trump is final
     heartsGameId: v.optional(v.id("heartsGames")),
     heartsScores: v.optional(v.array(v.object({
       roundNumber: v.number(),

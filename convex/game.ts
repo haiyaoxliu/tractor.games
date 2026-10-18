@@ -11,6 +11,7 @@ import {
   getPlayType,
   calculateRankChange,
   roundDefenders,
+  nextKittySeat,
   PROGRESSION_RANKS,
 } from "./gameLogic";
 
@@ -107,6 +108,7 @@ export const startGame = mutation({
       gameId,
       teamRanks,
       defendingTeamIndex: undefined,
+      kittySeat: undefined,
     });
 
     return gameId;
@@ -214,8 +216,8 @@ export const declareTrump = mutation({
 
     const isJokerDeclaration = type === "smallJokerPair" || type === "bigJokerPair";
 
-    // Round 1: declarer's team defends. Later rounds: defenders carry over; declaring picks trump only
-    const { seats: defendingTeam, kittySeat: declarerSeat } = roundDefenders(room.defendingTeamIndex, player.seat);
+    // Round 1: declarer's team defends. Later rounds: the kitty seat carries over; declaring picks trump only
+    const { seats: defendingTeam, kittySeat: declarerSeat } = roundDefenders(room.kittySeat, player.seat);
 
     // Give kitty to declarer
     const newHands = game.hands.map((h) => [...h]);
@@ -254,14 +256,14 @@ export const finalizeTrump = mutation({
 
     // Defenders are fixed now; in round 1 this also records them on the room for nextRound
     const { teamIndex, seats: defendingTeam, kittySeat: declarerSeat } = roundDefenders(
-      room.defendingTeamIndex,
+      room.kittySeat,
       lastDeclaration?.seat
     );
-    if (room.defendingTeamIndex === undefined) {
-      await ctx.db.patch(room._id, { defendingTeamIndex: teamIndex });
+    if (room.kittySeat === undefined) {
+      await ctx.db.patch(room._id, { kittySeat: declarerSeat, defendingTeamIndex: teamIndex });
     }
 
-    // Give kitty to the declarer (or the defending team's first seat)
+    // Give kitty to the kitty seat (庄家)
     const newHands = game.hands.map((h) => [...h]);
     newHands[declarerSeat] = [...newHands[declarerSeat], ...game.kitty];
 
@@ -472,14 +474,12 @@ export const nextRound = mutation({
     }
 
     // Determine who defends next round
-    // If defenders advanced (attackers scored < 80): same team keeps defending
-    // If neutral or attackers advanced: attacking team becomes new defenders
-    let newDefendingTeamIndex: number;
-    if (defenderChange > 0) {
-      newDefendingTeamIndex = defendingTeamIndex; // defenders keep defending
-    } else {
-      newDefendingTeamIndex = attackingTeamIndex; // attackers become defenders
-    }
+    // If defenders advanced (attackers scored < 80): same team keeps defending, kitty to the partner
+    // If neutral or attackers advanced: attacking team becomes new defenders, kitty to the next seat
+    // Rooms from before kittySeat existed fall back to the defending team's first seat
+    const kittySeat = room.kittySeat ?? defendingTeamIndex;
+    const newKittySeat = nextKittySeat(kittySeat, defenderChange === 0);
+    const newDefendingTeamIndex = newKittySeat % 2;
 
     const newTrumpRank = getTrumpRankFromRoom(newTeamRanks, newDefendingTeamIndex);
 
@@ -508,6 +508,7 @@ export const nextRound = mutation({
       gameId: newGameId,
       teamRanks: newTeamRanks,
       defendingTeamIndex: newDefendingTeamIndex,
+      kittySeat: newKittySeat,
     });
 
     return { newGameId, teamRanks: newTeamRanks, matchWinner: null };
