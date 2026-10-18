@@ -195,6 +195,7 @@ describe("validatePlay", () => {
 
 describe("scoring", () => {
   it("rank change brackets at 40 / 80 / 120 / 160 / 200", () => {
+    expect(calculateRankChange(5)).toEqual({ attackerChange: 0, defenderChange: 2 });
     expect(calculateRankChange(35)).toEqual({ attackerChange: 0, defenderChange: 2 });
     expect(calculateRankChange(40)).toEqual({ attackerChange: 0, defenderChange: 1 });
     expect(calculateRankChange(80)).toEqual({ attackerChange: 0, defenderChange: 0 });
@@ -203,8 +204,7 @@ describe("scoring", () => {
     expect(calculateRankChange(200)).toEqual({ attackerChange: 3, defenderChange: 0 });
   });
 
-  // Skipped: the code gives defenders +2 when attackers score 0. The common rule is +3. Tabled with the user.
-  it.skip("attackers scoring 0 gives defenders +3", () => {
+  it("attackers scoring 0 gives defenders +3", () => {
     expect(calculateRankChange(0)).toEqual({ attackerChange: 0, defenderChange: 3 });
   });
 
