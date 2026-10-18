@@ -17,6 +17,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+      - run: npm test
       # A placeholder URL is enough to build; CI never talks to Convex
       # and never runs `convex deploy`.
       - run: npx next build
