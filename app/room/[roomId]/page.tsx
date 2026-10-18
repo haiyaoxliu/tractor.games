@@ -3,8 +3,9 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getSessionId, getPlayerName } from "@/lib/cardUtils";
+import { getSessionId } from "@/lib/cardUtils";
 import { GAME_META, resolveGameType } from "@/lib/gameMeta";
 import RoomLobby from "@/components/RoomLobby";
 import GameBoard from "@/components/GameBoard";
@@ -25,9 +26,9 @@ function CenteredNotice({ title, body }: { title: string; body: string }) {
       <div className="panel" style={{ padding: "2rem", textAlign: "center" }}>
         <h2>{title}</h2>
         <p style={{ color: "var(--ink-soft)", margin: "1rem 0" }}>{body}</p>
-        <a href="/" style={{ color: "var(--accent)", fontWeight: 600 }}>
+        <Link href="/" style={{ color: "var(--accent)", fontWeight: 600 }}>
           Back to Home
-        </a>
+        </Link>
       </div>
     </main>
   );
@@ -40,8 +41,10 @@ export default function RoomPage() {
   const [sessionId, setSessionId] = useState("");
 
   useEffect(() => {
+    // sessionStorage is unavailable during SSR, so the session id can only be
+    // read after hydration
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSessionId(getSessionId());
-    getPlayerName();
   }, []);
 
   const room = useQuery(api.rooms.getRoomByCode, { roomCode });

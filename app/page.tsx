@@ -1,25 +1,28 @@
 'use client'
 
 import { useState, useEffect, FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
 import { useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import { getSessionId, getPlayerName, setPlayerName } from '@/lib/cardUtils'
 import styles from './page.module.css'
 
 export default function Home() {
+  const router = useRouter()
   const [name, setName] = useState('')
   const [roomCode, setRoomCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [savedName, setSavedName] = useState<string | null>(null)
 
   const createRoom = useMutation(api.rooms.createRoom)
   const joinRoom = useMutation(api.rooms.joinRoom)
 
   useEffect(() => {
-    const existing = getPlayerName()
+    const existing = getPlayerName()?.slice(0, 3)
     if (existing) {
-      setSavedName(existing)
+      // localStorage is unavailable during SSR, so the saved name can only be
+      // applied after hydration
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(existing)
     }
   }, [])
@@ -35,7 +38,7 @@ export default function Home() {
         sessionId: getSessionId(),
         gameType,
       })
-      window.location.href = `/room/${code}`
+      router.push(`/room/${code}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create room')
     } finally {
@@ -56,7 +59,7 @@ export default function Home() {
         name: name.trim(),
         sessionId: getSessionId(),
       })
-      window.location.href = `/room/${roomCode.trim().toUpperCase()}`
+      router.push(`/room/${roomCode.trim().toUpperCase()}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to join room')
     } finally {
@@ -110,18 +113,18 @@ export default function Home() {
               type="text"
               value={name}
               onChange={(e) => {
-                if (e.target.value.length <= 6) {
+                if (e.target.value.length <= 3) {
                   setName(e.target.value)
                   setError(null)
                 }
               }}
-              placeholder="Your name (max 6)"
+              placeholder="Your name (max 3)"
               className={styles.input}
-              maxLength={6}
+              maxLength={3}
               disabled={isLoading}
               autoFocus
             />
-            <span className={styles.charCount}>{name.length}/6</span>
+            <span className={styles.charCount}>{name.length}/3</span>
           </div>
 
           {error && <div className={styles.error}>{error}</div>}
