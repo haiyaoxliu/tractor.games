@@ -23,6 +23,9 @@ Convex is deployed only by Vercel's build on merge, never by hand.
   not been played through.
 - `/test` is a Tractor-only harness that ships to production.
 - README still describes Next 14 / React 18 and a 6-letter name.
+- 2026-10-18: game-mechanics work is on hold by the user. CI, tests that
+  pin current behavior (tasks 4–7, in progress), versioning (task 3) and
+  suite consistency continue.
 - PR #1 (Werewolf, February) was branched before Wizard and Skull King
   and is far behind main.
 
@@ -34,7 +37,7 @@ Convex is deployed only by Vercel's build on merge, never by hand.
    `npm ci`, `tsc --noEmit` (app and `convex/`), `npm run lint`,
    `next build` with a placeholder `NEXT_PUBLIC_CONVEX_URL`. It never runs
    `convex deploy`. Add `engines.node` to package.json.
-2. **Test runner.** In review (#4). Add Vitest and `npm test`, with one smoke test (deck
+2. **Test runner.** Done (#4). Add Vitest and `npm test`, with one smoke test (deck
    sizes: Tractor 108, Hearts 52, Wizard 60, Skull King 69). CI runs it.
 3. **Build number in the footer.** Show `b<n>` (and its name, if tagged)
    on every page, per ADR 29. On Vercel the clone is shallow, so the build
@@ -83,7 +86,6 @@ same PR or one per bug.
 
 ## Answers
 
-- Skull King uses the current rules: a mermaid taking the Skull King
-  pays +40, a pirate taking a mermaid pays +20. Task 5 implements and
-  tests it.
+- Skull King: current rules chosen (+40 / +20); the code change is on
+  hold with the other mechanics work, and the tests skip those two cases.
 - The player-name limit is back to 6 letters (this PR).
