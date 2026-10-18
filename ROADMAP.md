@@ -23,9 +23,6 @@ Convex is deployed only by Vercel's build on merge, never by hand.
   not been played through.
 - `/test` is a Tractor-only harness that ships to production.
 - README still describes Next 14 / React 18 and a 6-letter name.
-- 2026-10-18: game-mechanics work is on hold by the user. CI, tests that
-  pin current behavior (tasks 4–7, in progress), versioning (task 3) and
-  suite consistency continue.
 - PR #1 (Werewolf, February) was branched before Wizard and Skull King
   and is far behind main.
 
@@ -86,6 +83,6 @@ same PR or one per bug.
 
 ## Answers
 
-- Skull King: current rules chosen (+40 / +20); the code change is on
-  hold with the other mechanics work, and the tests skip those two cases.
+- Skull King: current rules (+40 / +20); task 5 (PR #6) implements and
+  tests it.
 - The player-name limit is back to 6 letters (this PR).
