@@ -86,7 +86,7 @@ export function getEffectiveSuit(card: Card, trumpSuit: string | undefined, trum
 // ─── Card Ordering (for comparison within a trick) ───────────────────────────
 
 const RANK_ORDER: Record<string, number> = {
-  "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
+  "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
   "T": 10, "J": 11, "Q": 12, "K": 13, "A": 14,
 };
 
@@ -162,7 +162,7 @@ export function getSuitStrengthOrder(suit: string, trumpSuit: string | undefined
     }
     strengths.push(999); // small joker
     strengths.push(1000); // big joker
-    return strengths;
+    return strengths.sort((a, b) => a - b);
   }
 
   // Non-trump suit: all ranks except trump rank
@@ -172,7 +172,7 @@ export function getSuitStrengthOrder(suit: string, trumpSuit: string | undefined
     const val = RANK_ORDER[rank] ?? 0;
     if (val > 0) strengths.push(val);
   }
-  return strengths;
+  return strengths.sort((a, b) => a - b);
 }
 
 /**
@@ -258,10 +258,11 @@ export function determineTrickWinner(
   const leadSuit = getEffectiveSuit(leadPlay.cards[0], trumpSuit, trumpRank, noTrumpSuit);
 
   let winnerIdx = 0;
-  let winnerStrength = playStrength(leadPlay, trumpSuit, trumpRank, leadSuit, leadType, noTrumpSuit);
+  const leadCount = leadPlay.cards.length;
+  let winnerStrength = playStrength(leadPlay, trumpSuit, trumpRank, leadSuit, leadType, leadCount, noTrumpSuit);
 
   for (let i = 1; i < plays.length; i++) {
-    const strength = playStrength(plays[i], trumpSuit, trumpRank, leadSuit, leadType, noTrumpSuit);
+    const strength = playStrength(plays[i], trumpSuit, trumpRank, leadSuit, leadType, leadCount, noTrumpSuit);
     if (strength > winnerStrength) {
       winnerStrength = strength;
       winnerIdx = i;
@@ -277,6 +278,7 @@ function playStrength(
   trumpRank: string,
   leadSuit: string,
   leadType: "single" | "pair" | "tractor" | "invalid",
+  leadCount: number,
   noTrumpSuit?: boolean
 ): number {
   const cards = play.cards;
@@ -286,7 +288,7 @@ function playStrength(
   // For tractor leads, only tractors can win
   if (leadType === "tractor") {
     if (playType !== "tractor") return -1;
-    if (cards.length !== play.cards.length) return -1;
+    if (cards.length !== leadCount) return -1;
     // Must match suit or be trump
     const topStrength = Math.max(...cards.map(c => cardStrength(c, trumpSuit, trumpRank, noTrumpSuit)));
     if (effectiveSuit === leadSuit) return topStrength;
@@ -497,18 +499,26 @@ export function calculateRankChange(attackerPoints: number): { attackerChange: n
   return { attackerChange: 3, defenderChange: 0 };
 }
 
-export function determineWinner(attackerPoints: number, kittyMultiplier: number): "attackers" | "defenders" {
-  const totalAttackerPoints = attackerPoints;
-  return totalAttackerPoints >= 80 ? "attackers" : "defenders";
+/** attackerPoints already includes the kitty bonus (see kittyBonus) */
+export function determineWinner(attackerPoints: number): "attackers" | "defenders" {
+  return attackerPoints >= 80 ? "attackers" : "defenders";
+}
+
+/** Kitty multiplier from the last trick's lead shape: ×2 single, ×4 pair, ×2 per card for a tractor */
+export function kittyMultiplier(leadCards: Card[], trumpSuit: string | undefined, trumpRank: string, noTrumpSuit?: boolean): number {
+  const type = getPlayType(leadCards, trumpSuit, trumpRank, noTrumpSuit);
+  if (type === "pair") return 4;
+  if (type === "tractor") return 2 * leadCards.length;
+  return 2;
 }
 
 /** Calculate bonus points from kitty if attackers win last trick */
-export function kittyBonus(kittyDiscards: Card[], lastTrickWinner: number, declarerSeat: number): number {
+export function kittyBonus(kittyDiscards: Card[], lastTrickWinner: number, declarerSeat: number, multiplier = 2): number {
   const declarerTeam = [declarerSeat, (declarerSeat + 2) % 4];
   const isDefenderWin = declarerTeam.includes(lastTrickWinner);
-  // If attackers win last trick, kitty points are doubled and added to attacker score
+  // If attackers win last trick, kitty points are multiplied and added to attacker score
   if (!isDefenderWin) {
-    return totalPoints(kittyDiscards) * 2;
+    return totalPoints(kittyDiscards) * multiplier;
   }
   return 0;
 }
