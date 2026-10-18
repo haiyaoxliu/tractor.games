@@ -252,7 +252,8 @@ export function determineSkullKingTrickWinner(plays: BidTrickPlay[]): number {
 }
 
 // Bonus points credited to the trick winner (paid out only if their bid is exact):
-// standard 14s +10, black 14 +20, SK captures pirates +30 each, mermaid captures SK +50
+// standard 14s +10, black 14 +20, SK captures pirates +30 each, mermaid captures SK +40,
+// pirate captures mermaids +20 each
 export function skullKingTrickBonus(plays: BidTrickPlay[], winnerSeat: number): number {
   let bonus = 0;
   const winnerCard = plays.find((p) => p.seat === winnerSeat)!.cards[0];
@@ -264,7 +265,8 @@ export function skullKingTrickBonus(plays: BidTrickPlay[], winnerSeat: number): 
       bonus += skSuit(card) === "B" ? 20 : 10;
     }
     if (winnerKind === "skullking" && skKind(card) === "pirate") bonus += 30;
-    if (winnerKind === "mermaid" && skKind(card) === "skullking") bonus += 50;
+    if (winnerKind === "mermaid" && skKind(card) === "skullking") bonus += 40;
+    if (winnerKind === "pirate" && skKind(card) === "mermaid") bonus += 20;
   }
   return bonus;
 }

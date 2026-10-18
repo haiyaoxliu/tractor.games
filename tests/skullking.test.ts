@@ -89,13 +89,11 @@ describe("skullKingTrickBonus", () => {
     expect(skullKingTrickBonus(trick("05G", "09G"), 1)).toBe(0);
   });
 
-  // bonus edition tabled (current rules +40/+20)
-  it.skip("+40 when a mermaid captures the Skull King", () => {
+  it("+40 when a mermaid captures the Skull King", () => {
     expect(skullKingTrickBonus(trick("SK", "MM1"), 1)).toBe(40);
   });
 
-  // bonus edition tabled (current rules +40/+20)
-  it.skip("+20 for each mermaid captured by a pirate", () => {
+  it("+20 for each mermaid captured by a pirate", () => {
     expect(skullKingTrickBonus(trick("MM1", "PR1", "MM2"), 1)).toBe(40);
   });
 });
