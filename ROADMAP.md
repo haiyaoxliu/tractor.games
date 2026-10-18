@@ -53,8 +53,8 @@ Convex is deployed only by Vercel's build on merge, never by hand.
 7. **Tractor rules.** Done (#10). `convex/gameLogic.ts`: trump and effective suit,
    pairs and tractors, trick winner, follow rules, kitty bonus, rank
    change. #11 fixes the clear bugs the tests found: tractor order
-   (K-K-A-A, 2-2-3-3, trump A-A into the trump-rank pair), the kitty
-   multiplier by the last trick's shape, and `playStrength`'s length check.
+   (K-K-A-A, 2-2-3-3, trump A-A into the trump-rank pair) and
+   `playStrength`'s length check. The kitty stays ×2 (user's choice).
 
 ### Play-throughs (four browser tabs against the dev deployment)
 
