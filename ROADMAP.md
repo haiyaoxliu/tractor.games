@@ -36,7 +36,8 @@ Convex is deployed only by Vercel's build on merge, never by hand.
    `convex deploy`. Add `engines.node` to package.json.
 2. **Test runner.** Done (#4). Add Vitest and `npm test`, with one smoke test (deck
    sizes: Tractor 108, Hearts 52, Wizard 60, Skull King 69). CI runs it.
-3. **Build number in the footer.** Show `b<n>` (and its name, if tagged)
+3. **Build number in the footer.** Dropped: public sites show no build
+   number (user, 2026-10-20). Was: show `b<n>` (and its name, if tagged)
    on every page, per ADR 29. On Vercel the clone is shallow, so the build
    command runs `git fetch --unshallow` before counting.
 
@@ -55,6 +56,14 @@ Convex is deployed only by Vercel's build on merge, never by hand.
    change. #11 fixes the clear bugs the tests found: tractor order
    (K-K-A-A, 2-2-3-3, trump A-A into the trump-rank pair) and
    `playStrength`'s length check. The kitty stays ×2 (user's choice).
+
+Rule fixes done after the tests:
+
+- Tractor rules: #11 (tractor order, play strength), #12 (kitty stays ×2,
+  `kittyMultiplier` dropped), #14 (level changes go to the team that
+  actually defended), #15 (defenders +3 when attackers score 0).
+- Gong Zhu common rules: #16 (pig Q♠, hearts ladder, 全红 flips, 10♣
+  transformer; the scoring breakdown matches).
 
 ### Play-throughs (four browser tabs against the dev deployment)
 

@@ -5,6 +5,7 @@ import {
   dealHearts,
   determineHeartsTrickWinner,
   findTwoOfClubs,
+  summarizeHeartsCapture,
   validateHeartsPlay,
   type HeartsTrickPlay,
 } from "../convex/heartsGameLogic";
@@ -117,5 +118,13 @@ describe("calculateHeartsRoundScores", () => {
 
   it("scores each seat independently", () => {
     expect(calculateHeartsRoundScores([["AH"], ["JD"], ["TC"], []])).toEqual([50, -100, -50, 0]);
+  });
+});
+
+describe("summarizeHeartsCapture", () => {
+  it("flags 全红 and whether the 10♣ doubles", () => {
+    expect(summarizeHeartsCapture([...ALL_HEARTS, "QS"])).toMatchObject({ allHearts: true, hasQS: true });
+    expect(summarizeHeartsCapture(["TC", "AH"]).tcDoubles).toBe(true);
+    expect(summarizeHeartsCapture(["TC", "2H"]).tcDoubles).toBe(false);
   });
 });

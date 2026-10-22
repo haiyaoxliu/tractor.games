@@ -115,37 +115,52 @@ export function isHeartsScoringCard(card: string): boolean {
   return card in HEART_SCORES || card === "QS" || card === "JD" || card === "TC";
 }
 
+export interface HeartsCaptureSummary {
+  heartPoints: number;
+  allHearts: boolean; // 全红
+  hasQS: boolean;
+  hasJD: boolean;
+  hasTC: boolean;
+  tcDoubles: boolean; // false means TC is alone (-50)
+}
+
+export function summarizeHeartsCapture(cards: string[]): HeartsCaptureSummary {
+  let heartPoints = 0;
+  let heartCount = 0;
+  for (const card of cards) {
+    if (card in HEART_SCORES) {
+      heartPoints += HEART_SCORES[card];
+      heartCount++;
+    }
+  }
+  const hasQS = cards.includes("QS");
+  const hasJD = cards.includes("JD");
+  const hasTC = cards.includes("TC");
+  return {
+    heartPoints,
+    allHearts: heartCount === 13,
+    hasQS,
+    hasJD,
+    hasTC,
+    tcDoubles: hasTC && (heartPoints > 0 || hasQS || hasJD),
+  };
+}
+
 export function calculateHeartsRoundScores(capturedCards: string[][]): number[] {
   const scores: number[] = [0, 0, 0, 0];
 
   for (let seat = 0; seat < 4; seat++) {
-    const cards = capturedCards[seat];
-    let heartPoints = 0;
-    let heartCount = 0;
-    let hasQS = false;
-    let hasJD = false;
-    let hasTC = false;
-
-    for (const card of cards) {
-      if (card in HEART_SCORES) {
-        heartPoints += HEART_SCORES[card];
-        heartCount++;
-      }
-      if (card === "QS") hasQS = true;
-      if (card === "JD") hasJD = true;
-      if (card === "TC") hasTC = true;
-    }
+    const { heartPoints, allHearts, hasQS, hasJD, hasTC, tcDoubles } =
+      summarizeHeartsCapture(capturedCards[seat]);
 
     // 全红: taking all 13 hearts flips them (and the pig, if also taken) in your favour
-    const allHearts = heartCount === 13;
     let baseScore = allHearts ? -heartPoints : heartPoints;
     if (hasQS) baseScore += allHearts ? -100 : 100;
     if (hasJD) baseScore -= 100;
 
     // TC: alone it's -50; otherwise it doubles all other scoring
     if (hasTC) {
-      const hasScoringBesidesTC = heartPoints > 0 || hasQS || hasJD;
-      scores[seat] = hasScoringBesidesTC ? baseScore * 2 : -50;
+      scores[seat] = tcDoubles ? baseScore * 2 : -50;
     } else {
       scores[seat] = baseScore;
     }
