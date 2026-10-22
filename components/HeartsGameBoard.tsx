@@ -107,8 +107,8 @@ export default function HeartsGameBoard({ game, sessionId }: HeartsGameBoardProp
       {error && (
         <div
           style={{
-            background: "#f8d7da",
-            color: "#721c24",
+            background: "var(--error-bg)",
+            color: "var(--error-ink)",
             padding: "0.5rem 1rem",
             borderRadius: 6,
             fontSize: "0.85rem",
@@ -150,7 +150,7 @@ export default function HeartsGameBoard({ game, sessionId }: HeartsGameBoardProp
         <div
           className="panel"
           style={{
-            background: "var(--panel-soft)",
+            background: "var(--table)",
             padding: "1rem",
             margin: "0.5rem 0",
             minHeight: 200,

@@ -163,9 +163,9 @@ export default function BidGameBoard({ game, sessionId }: BidGameBoardProps) {
       {error && (
         <div
           style={{
-            background: "#fef2f2",
-            color: "#991b1b",
-            border: "1px solid #fecaca",
+            background: "var(--error-soft-bg)",
+            color: "var(--error-soft-ink)",
+            border: "1px solid var(--error-soft-line)",
             padding: "0.5rem 1rem",
             borderRadius: 8,
             fontSize: "0.85rem",
@@ -296,7 +296,7 @@ export default function BidGameBoard({ game, sessionId }: BidGameBoardProps) {
         <div
           className="panel"
           style={{
-            background: "var(--panel-soft)",
+            background: "var(--table)",
             padding: "1rem",
             margin: "0.75rem 0",
             minHeight: 150,

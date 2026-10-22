@@ -187,8 +187,8 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
       {error && (
         <div
           style={{
-            background: "#f8d7da",
-            color: "#721c24",
+            background: "var(--error-bg)",
+            color: "var(--error-ink)",
             padding: "0.5rem 1rem",
             borderRadius: 6,
             fontSize: "0.85rem",
@@ -206,9 +206,9 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
           style={{
             textAlign: "center",
             padding: "1rem",
-            background: "#e3f2fd",
+            background: "var(--info-bg)",
             borderRadius: 8,
-            border: "2px solid #42a5f5",
+            border: "2px solid var(--info-line)",
             margin: "1rem 0",
           }}
         >
@@ -232,12 +232,12 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
           style={{
             textAlign: "center",
             padding: "0.75rem",
-            background: "#fff8e1",
+            background: "var(--waiting-bg)",
             borderRadius: 8,
-            border: "1px solid #ffca28",
+            border: "1px solid var(--waiting-line)",
             margin: "1rem 0",
             fontSize: "0.9rem",
-            color: "#f57f17",
+            color: "var(--waiting-ink)",
           }}
         >
           Waiting for other players to finish drawing cards...
@@ -287,7 +287,7 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
         <div
           className="panel"
           style={{
-            background: "var(--panel-soft)",
+            background: "var(--table)",
             padding: "1rem",
             margin: "0.5rem 0",
             minHeight: 200,
@@ -343,7 +343,7 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
           style={{
             textAlign: "center",
             padding: "2rem",
-            background: matchWinner !== null ? "#fffbeb" : undefined,
+            background: matchWinner !== null ? "var(--match-win-bg)" : undefined,
             marginTop: "1rem",
           }}
         >
@@ -353,7 +353,7 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
               <p style={{ fontSize: "1.2rem" }}>
                 Attackers scored <strong>{game.attackerPoints}</strong> points.
               </p>
-              <p style={{ fontSize: "1.3rem", fontWeight: 700, color: "#d4a017" }}>
+              <p style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--match-win-ink)" }}>
                 Team {matchWinner === 0 ? "A (Seats 0 & 2)" : "B (Seats 1 & 3)"} wins the match!
               </p>
             </>
@@ -373,17 +373,17 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
                   Defenders (Team {defendingTeamIndex === 0 ? "A" : "B"}):{" "}
                   <strong>{PROGRESSION_RANKS[defRankBefore]}</strong>
                   {defenderChange > 0 && (
-                    <span style={{ color: "#28a745" }}> → {PROGRESSION_RANKS[defRankAfter]}</span>
+                    <span style={{ color: "var(--legacy-good)" }}> → {PROGRESSION_RANKS[defRankAfter]}</span>
                   )}
-                  {defenderChange === 0 && <span style={{ color: "#6c757d" }}> (no change)</span>}
+                  {defenderChange === 0 && <span style={{ color: "var(--legacy-muted)" }}> (no change)</span>}
                 </div>
                 <div>
                   Attackers (Team {attackingTeamIndex === 0 ? "A" : "B"}):{" "}
                   <strong>{PROGRESSION_RANKS[atkRankBefore]}</strong>
                   {attackerChange > 0 && (
-                    <span style={{ color: "#28a745" }}> → {PROGRESSION_RANKS[atkRankAfter]}</span>
+                    <span style={{ color: "var(--legacy-good)" }}> → {PROGRESSION_RANKS[atkRankAfter]}</span>
                   )}
-                  {attackerChange === 0 && <span style={{ color: "#6c757d" }}> (no change)</span>}
+                  {attackerChange === 0 && <span style={{ color: "var(--legacy-muted)" }}> (no change)</span>}
                 </div>
               </div>
 
@@ -394,7 +394,7 @@ export default function GameBoard({ game, sessionId }: GameBoardProps) {
           )}
 
           {game.kittyDiscards.length > 0 && (
-            <p style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "0.85rem", color: "var(--legacy-gray-666)", marginTop: "0.5rem" }}>
               Kitty discards: {game.kittyDiscards.join(", ")}
             </p>
           )}

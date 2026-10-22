@@ -16,7 +16,7 @@ interface TrickAreaProps {
 export default function TrickArea({ currentTrick, players, mySeat }: TrickAreaProps) {
   if (currentTrick.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "2rem", color: "#999" }}>
+      <div style={{ textAlign: "center", padding: "2rem", color: "var(--legacy-gray-999)" }}>
         No cards played yet
       </div>
     );
@@ -56,7 +56,7 @@ export default function TrickArea({ currentTrick, players, mySeat }: TrickAreaPr
 
         return (
           <div key={play.seat} style={{ gridArea, textAlign: "center" }}>
-            <div style={{ fontSize: "0.75rem", color: "#666", marginBottom: 2 }}>
+            <div style={{ fontSize: "0.75rem", color: "var(--legacy-gray-666)", marginBottom: 2 }}>
               {playerName}
             </div>
             {play.cards.map((c, i) => (

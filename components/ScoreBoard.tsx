@@ -41,7 +41,7 @@ export default function ScoreBoard({
         display: "flex",
         gap: "1.5rem",
         padding: "0.75rem 1rem",
-        background: "#f8f9fa",
+        background: "var(--legacy-strip-bg)",
         borderRadius: 8,
         fontSize: "0.85rem",
         flexWrap: "wrap",
@@ -50,7 +50,7 @@ export default function ScoreBoard({
     >
       <span>
         <strong>Role:</strong>{" "}
-        <span style={{ color: isDefender ? "#28a745" : "#dc3545" }}>{myRole}</span>
+        <span style={{ color: isDefender ? "var(--legacy-good)" : "var(--legacy-bad)" }}>{myRole}</span>
       </span>
       <span>
         <strong>Attacker Pts:</strong> {attackerPoints}/80
@@ -71,7 +71,7 @@ export default function ScoreBoard({
         </span>
       )}
       {phase === "playing" && (
-        <span style={{ color: "#6c757d", fontSize: "0.8rem" }}>
+        <span style={{ color: "var(--legacy-muted)", fontSize: "0.8rem" }}>
           {defenderChange > 0
             ? `Def +${defenderChange}`
             : attackerChange > 0

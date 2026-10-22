@@ -21,7 +21,7 @@ export default function HeartsScoreSheet({
   return (
     <div
       style={{
-        background: "#fff",
+        background: "var(--legacy-sheet-bg)",
         borderRadius: 8,
         padding: "1rem",
         fontSize: "0.85rem",
@@ -31,13 +31,13 @@ export default function HeartsScoreSheet({
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ padding: "4px 8px", borderBottom: "2px solid #333", textAlign: "left" }}>
+            <th style={{ padding: "4px 8px", borderBottom: "2px solid var(--legacy-gray-333)", textAlign: "left" }}>
               Round
             </th>
             {sortedPlayers.map((p) => (
               <th
                 key={p.seat}
-                style={{ padding: "4px 8px", borderBottom: "2px solid #333", textAlign: "center" }}
+                style={{ padding: "4px 8px", borderBottom: "2px solid var(--legacy-gray-333)", textAlign: "center" }}
               >
                 {p.name}
               </th>
@@ -51,9 +51,9 @@ export default function HeartsScoreSheet({
             return (
               <tr
                 key={round.roundNumber}
-                style={{ background: isCurrentRound ? "#fff3cd" : "transparent" }}
+                style={{ background: isCurrentRound ? "var(--highlight-bg)" : "transparent" }}
               >
-                <td style={{ padding: "4px 8px", borderBottom: "1px solid #eee" }}>
+                <td style={{ padding: "4px 8px", borderBottom: "1px solid var(--legacy-gray-eee)" }}>
                   {round.roundNumber}
                 </td>
                 {round.scores.map((score, idx) => (
@@ -61,9 +61,9 @@ export default function HeartsScoreSheet({
                     key={idx}
                     style={{
                       padding: "4px 8px",
-                      borderBottom: "1px solid #eee",
+                      borderBottom: "1px solid var(--legacy-gray-eee)",
                       textAlign: "center",
-                      color: score > 0 ? "#dc3545" : score < 0 ? "#28a745" : "#666",
+                      color: score > 0 ? "var(--legacy-bad)" : score < 0 ? "var(--legacy-good)" : "var(--legacy-gray-666)",
                       fontWeight: 600,
                     }}
                   >
@@ -73,7 +73,7 @@ export default function HeartsScoreSheet({
               </tr>
             );
           })}
-          <tr style={{ fontWeight: 700, borderTop: "2px solid #333" }}>
+          <tr style={{ fontWeight: 700, borderTop: "2px solid var(--legacy-gray-333)" }}>
             <td style={{ padding: "4px 8px" }}>Total</td>
             {cumulative.map((total, idx) => (
               <td
@@ -81,7 +81,7 @@ export default function HeartsScoreSheet({
                 style={{
                   padding: "4px 8px",
                   textAlign: "center",
-                  color: total > 0 ? "#dc3545" : total < 0 ? "#28a745" : "#666",
+                  color: total > 0 ? "var(--legacy-bad)" : total < 0 ? "var(--legacy-good)" : "var(--legacy-gray-666)",
                 }}
               >
                 {total > 0 ? `+${total}` : total}

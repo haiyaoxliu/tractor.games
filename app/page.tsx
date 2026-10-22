@@ -165,7 +165,7 @@ export default function Home() {
               type="submit"
               className={styles.button}
               disabled={isLoading || !name.trim() || roomCode.length < 4}
-              style={{ background: '#555' }}
+              style={{ background: 'var(--legacy-gray-555)' }}
             >
               Join Room
             </button>
