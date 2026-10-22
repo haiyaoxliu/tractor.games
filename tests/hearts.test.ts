@@ -5,6 +5,7 @@ import {
   dealHearts,
   determineHeartsTrickWinner,
   findTwoOfClubs,
+  summarizeHeartsCapture,
   validateHeartsPlay,
   type HeartsTrickPlay,
 } from "../convex/heartsGameLogic";
@@ -74,34 +75,34 @@ describe("determineHeartsTrickWinner", () => {
   });
 });
 
-// Positive = penalty. Hearts and the pig cost points; the goat and a lone transformer earn them.
+// Common Gong Zhu (pagat.com). Positive = penalty: hearts and the pig cost points;
+// the goat and a lone transformer earn them.
 describe("calculateHeartsRoundScores", () => {
   it("scores nothing for non-scoring cards", () => {
     expect(score(["2S", "AS", "KC"])).toBe(0);
   });
 
-  it("all 13 hearts total 200", () => {
-    expect(score(ALL_HEARTS)).toBe(200);
-  });
-
-  // Unusual: 4H scores 10 while 2H/3H score face value; common Gong Zhu scores
-  // 2H-4H as 0 and 5H-TH as 10 each (same 200 total).
-  it.skip("hearts use the common Gong Zhu ladder", () => {
+  it("hearts use the common Gong Zhu ladder", () => {
     expect(ALL_HEARTS.map((h) => score([h]))).toEqual([0, 0, 0, 10, 10, 10, 10, 10, 10, 20, 30, 40, 50]);
   });
 
-  // Unusual: the code's pig is QD; common Gong Zhu uses QS.
-  it.skip("the pig (QS) costs 100", () => {
+  it("the pig (QS) costs 100; QD scores nothing", () => {
     expect(score(["QS"])).toBe(100);
-  });
-
-  it("the code's pig (QD) costs 100", () => {
-    expect(score(["QD"])).toBe(100);
+    expect(score(["QD"])).toBe(0);
   });
 
   it("the goat (JD) earns 100", () => {
     expect(score(["JD"])).toBe(-100);
-    expect(score(["QD", "JD"])).toBe(0);
+    expect(score(["QS", "JD"])).toBe(0);
+  });
+
+  it("全红: all 13 hearts count -200, and flip the pig too", () => {
+    expect(score(ALL_HEARTS)).toBe(-200);
+    expect(score([...ALL_HEARTS, "QS"])).toBe(-300);
+    expect(score([...ALL_HEARTS, "QS", "JD"])).toBe(-400);
+    expect(score([...ALL_HEARTS, "TC"])).toBe(-400);
+    // One heart short is still a penalty
+    expect(score(ALL_HEARTS.slice(1))).toBe(200);
   });
 
   it("the transformer (TC) alone earns 50", () => {
@@ -117,5 +118,13 @@ describe("calculateHeartsRoundScores", () => {
 
   it("scores each seat independently", () => {
     expect(calculateHeartsRoundScores([["AH"], ["JD"], ["TC"], []])).toEqual([50, -100, -50, 0]);
+  });
+});
+
+describe("summarizeHeartsCapture", () => {
+  it("flags 全红 and whether the 10♣ doubles", () => {
+    expect(summarizeHeartsCapture([...ALL_HEARTS, "QS"])).toMatchObject({ allHearts: true, hasQS: true });
+    expect(summarizeHeartsCapture(["TC", "AH"]).tcDoubles).toBe(true);
+    expect(summarizeHeartsCapture(["TC", "2H"]).tcDoubles).toBe(false);
   });
 });

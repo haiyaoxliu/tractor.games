@@ -104,47 +104,63 @@ export function validateHeartsPlay(
 }
 
 // ─── Gong Zhu Scoring ────────────────────────────────────────────────────────
+// Common rules (pagat.com/reverse/gongzhu.html). Positive = penalty.
 
 const HEART_SCORES: Record<string, number> = {
-  "2H": 2, "3H": 3, "4H": 10, "5H": 5, "6H": 6, "7H": 7,
-  "8H": 8, "9H": 9, "TH": 10, "JH": 20, "QH": 30, "KH": 40, "AH": 50,
+  "2H": 0, "3H": 0, "4H": 0, "5H": 10, "6H": 10, "7H": 10,
+  "8H": 10, "9H": 10, "TH": 10, "JH": 20, "QH": 30, "KH": 40, "AH": 50,
 };
 
 export function isHeartsScoringCard(card: string): boolean {
-  return card in HEART_SCORES || card === "QD" || card === "JD" || card === "TC";
+  return card in HEART_SCORES || card === "QS" || card === "JD" || card === "TC";
+}
+
+export interface HeartsCaptureSummary {
+  heartPoints: number;
+  allHearts: boolean; // 全红
+  hasQS: boolean;
+  hasJD: boolean;
+  hasTC: boolean;
+  tcDoubles: boolean; // false means TC is alone (-50)
+}
+
+export function summarizeHeartsCapture(cards: string[]): HeartsCaptureSummary {
+  let heartPoints = 0;
+  let heartCount = 0;
+  for (const card of cards) {
+    if (card in HEART_SCORES) {
+      heartPoints += HEART_SCORES[card];
+      heartCount++;
+    }
+  }
+  const hasQS = cards.includes("QS");
+  const hasJD = cards.includes("JD");
+  const hasTC = cards.includes("TC");
+  return {
+    heartPoints,
+    allHearts: heartCount === 13,
+    hasQS,
+    hasJD,
+    hasTC,
+    tcDoubles: hasTC && (heartPoints > 0 || hasQS || hasJD),
+  };
 }
 
 export function calculateHeartsRoundScores(capturedCards: string[][]): number[] {
   const scores: number[] = [0, 0, 0, 0];
 
   for (let seat = 0; seat < 4; seat++) {
-    const cards = capturedCards[seat];
-    let heartPoints = 0;
-    let hasQD = false;
-    let hasJD = false;
-    let hasTC = false;
+    const { heartPoints, allHearts, hasQS, hasJD, hasTC, tcDoubles } =
+      summarizeHeartsCapture(capturedCards[seat]);
 
-    for (const card of cards) {
-      if (card in HEART_SCORES) heartPoints += HEART_SCORES[card];
-      if (card === "QD") hasQD = true;
-      if (card === "JD") hasJD = true;
-      if (card === "TC") hasTC = true;
-    }
-
-    // Base scoring: hearts + QD(+100) + JD(-100)
-    let baseScore = heartPoints;
-    if (hasQD) baseScore += 100;
+    // 全红: taking all 13 hearts flips them (and the pig, if also taken) in your favour
+    let baseScore = allHearts ? -heartPoints : heartPoints;
+    if (hasQS) baseScore += allHearts ? -100 : 100;
     if (hasJD) baseScore -= 100;
 
-    // TC logic: if TC is the ONLY scoring card, it's -50
-    // otherwise it doubles ALL other scoring
+    // TC: alone it's -50; otherwise it doubles all other scoring
     if (hasTC) {
-      const hasScoringBesidesTC = heartPoints > 0 || hasQD || hasJD;
-      if (!hasScoringBesidesTC) {
-        scores[seat] = -50;
-      } else {
-        scores[seat] = baseScore * 2;
-      }
+      scores[seat] = tcDoubles ? baseScore * 2 : -50;
     } else {
       scores[seat] = baseScore;
     }

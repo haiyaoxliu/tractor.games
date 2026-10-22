@@ -1,7 +1,11 @@
 "use client";
 
 import Card from "./Card";
-import { isHeartsScoringCard, calculateHeartsRoundScores } from "@/convex/heartsGameLogic";
+import {
+  isHeartsScoringCard,
+  calculateHeartsRoundScores,
+  summarizeHeartsCapture,
+} from "@/convex/heartsGameLogic";
 
 interface HeartsScoringBreakdownProps {
   capturedCards: string[][];
@@ -20,17 +24,13 @@ export default function HeartsScoringBreakdown({
       {sortedPlayers.map((player) => {
         const seat = player.seat;
         const scoringCards = capturedCards[seat].filter(isHeartsScoringCard);
-        const hasTC = capturedCards[seat].includes("TC");
-        const hasQD = capturedCards[seat].includes("QD");
-        const hasJD = capturedCards[seat].includes("JD");
-        const heartCards = scoringCards.filter((c) => c[1] === "H");
+        const { allHearts, hasQS, hasTC, tcDoubles } = summarizeHeartsCapture(capturedCards[seat]);
         const score = scores[seat];
 
         // Annotation for TC
         let tcNote = "";
         if (hasTC) {
-          const hasOtherScoring = heartCards.length > 0 || hasQD || hasJD;
-          tcNote = hasOtherScoring ? "10\u2663 doubled all scores!" : "10\u2663 alone = -50";
+          tcNote = tcDoubles ? "10\u2663 doubled all scores!" : "10\u2663 alone = -50";
         }
 
         return (
@@ -59,7 +59,7 @@ export default function HeartsScoringBreakdown({
               <div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 0 }}>
                   {scoringCards.map((card, i) => {
-                    const isSpecial = card === "QD" || card === "JD" || card === "TC";
+                    const isSpecial = card === "QS" || card === "JD" || card === "TC";
                     return (
                       <span key={`${card}-${i}`} style={{ position: "relative" }}>
                         <Card card={card} small />
@@ -70,20 +70,30 @@ export default function HeartsScoringBreakdown({
                               top: -4,
                               right: -2,
                               fontSize: "0.6rem",
-                              background: card === "JD" ? "var(--legacy-good)" : card === "QD" ? "var(--legacy-bad)" : "var(--legacy-orange)",
+                              background:
+                                card === "JD" || (card === "QS" && allHearts)
+                                  ? "var(--legacy-good)"
+                                  : card === "QS"
+                                    ? "var(--legacy-bad)"
+                                    : "var(--legacy-orange)",
                               color: "var(--on-color)",
                               borderRadius: 4,
                               padding: "0 3px",
                               fontWeight: 700,
                             }}
                           >
-                            {card === "QD" ? "+100" : card === "JD" ? "-100" : "x2"}
+                            {card === "QS" ? (allHearts ? "-100" : "+100") : card === "JD" ? "-100" : tcDoubles ? "x2" : "-50"}
                           </span>
                         )}
                       </span>
                     );
                   })}
                 </div>
+                {allHearts && (
+                  <div style={{ fontSize: "0.75rem", color: "var(--legacy-good)", fontStyle: "italic", marginTop: 4 }}>
+                    {hasQS ? "\u5168\u7ea2: hearts and pig flipped!" : "\u5168\u7ea2: hearts flipped!"}
+                  </div>
+                )}
                 {tcNote && (
                   <div style={{ fontSize: "0.75rem", color: "var(--legacy-orange)", fontStyle: "italic", marginTop: 4 }}>
                     {tcNote}
